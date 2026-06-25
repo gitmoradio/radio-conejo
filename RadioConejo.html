@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     /* ====================================================
-       RADIO CONEJO — DeBÍ TiRAR MáS FOToS WORLD TOUR
+       RADIO CONEJO — DeBÍ TiRAR MáS FOToS WORLD TOUR 2026
        Single-file · Vanilla JS · GitHub Pages ready
        ==================================================== */
 
@@ -61,7 +61,8 @@
       align-items: center;
       justify-content: center;
       z-index: 8000;
-      padding: 2rem;
+      padding: 1.5rem 1.5rem 2rem;
+      overflow-y: auto;
     }
 
     #lockScreen.unlocking { animation: lockBurst 0.9s ease-in forwards; }
@@ -74,20 +75,20 @@
     }
 
     .lock-frog {
-      font-size: clamp(4rem, 15vw, 7rem);
+      font-size: clamp(3rem, 12vw, 5.5rem);
       line-height: 1;
       animation: frogBounce 1.4s ease-in-out infinite;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.3rem;
       filter: drop-shadow(0 0 30px rgba(255,229,0,0.4));
     }
 
     @keyframes frogBounce {
       0%, 100% { transform: translateY(0) rotate(-3deg); }
-      50%       { transform: translateY(-16px) rotate(3deg); }
+      50%       { transform: translateY(-14px) rotate(3deg); }
     }
 
     .lock-title {
-      font-size: clamp(3.5rem, 14vw, 7rem);
+      font-size: clamp(3rem, 12vw, 6rem);
       color: var(--yellow);
       text-shadow: 4px 4px 0 var(--pink), 8px 8px 0 rgba(45,0,87,0.8);
       line-height: 0.95;
@@ -96,30 +97,90 @@
 
     .lock-sub {
       color: var(--pink);
-      font-size: clamp(0.7rem, 2.5vw, 1rem);
-      letter-spacing: 0.25em;
+      font-size: clamp(0.65rem, 2.2vw, 0.9rem);
+      letter-spacing: 0.2em;
       text-transform: uppercase;
       text-align: center;
-      margin: 0.6rem 0 2rem;
+      margin: 0.5rem 0 1.2rem;
     }
+
+    /* ── Show Picker ──────────────────────────────────── */
+
+    .show-picker {
+      width: 100%;
+      max-width: 420px;
+      margin-bottom: 1.2rem;
+    }
+
+    .show-picker-label {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 0.85rem;
+      letter-spacing: 0.25em;
+      color: rgba(255,255,255,0.4);
+      text-align: center;
+      margin-bottom: 0.6rem;
+    }
+
+    .show-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      justify-content: center;
+    }
+
+    .show-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.35rem 0.75rem;
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(255,0,110,0.3);
+      border-radius: 30px;
+      color: rgba(255,255,255,0.6);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+
+    .show-btn:hover {
+      border-color: var(--pink);
+      color: var(--white);
+      background: rgba(255,0,110,0.1);
+    }
+
+    .show-btn.active {
+      background: var(--pink);
+      border-color: var(--pink);
+      color: var(--white);
+      box-shadow: 0 2px 12px rgba(255,0,110,0.4);
+    }
+
+    .show-btn .show-flag  { font-size: 0.95rem; line-height: 1; }
+    .show-btn .show-city  { font-weight: 700; }
+    .show-btn .show-date  { opacity: 0.8; font-size: 0.72rem; }
+
+    /* ── Code form ──────────────────────────────────── */
 
     .lock-form {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.9rem;
+      gap: 0.8rem;
       width: 100%;
-      max-width: 300px;
+      max-width: 280px;
     }
 
     .lock-input {
       width: 100%;
-      padding: 0.9rem 1.4rem;
+      padding: 0.85rem 1.2rem;
       background: rgba(255,255,255,0.07);
       border: 2px solid var(--pink);
       border-radius: 10px;
       color: var(--white);
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       text-align: center;
       font-family: 'Space Grotesk', sans-serif;
       letter-spacing: 0.35em;
@@ -127,7 +188,7 @@
       transition: border-color 0.25s, box-shadow 0.25s;
     }
 
-    .lock-input::placeholder { letter-spacing: 0.1em; font-size: 0.95rem; }
+    .lock-input::placeholder { letter-spacing: 0.1em; font-size: 0.9rem; }
     .lock-input:focus { border-color: var(--yellow); box-shadow: 0 0 0 3px rgba(255,229,0,0.2), 0 0 24px rgba(255,229,0,0.15); }
     .lock-input.shake { animation: inputShake 0.4s ease; border-color: var(--pr-red) !important; }
 
@@ -141,13 +202,13 @@
 
     .lock-btn {
       width: 100%;
-      padding: 0.9rem;
+      padding: 0.85rem;
       background: var(--pink);
       border: none;
       border-radius: 10px;
       color: var(--white);
       font-family: 'Bebas Neue', cursive;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       letter-spacing: 0.12em;
       cursor: pointer;
       transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
@@ -156,8 +217,8 @@
 
     .lock-btn:hover  { background: var(--yellow); color: var(--deep); box-shadow: 0 4px 24px rgba(255,229,0,0.5); }
     .lock-btn:active { transform: scale(0.97); }
-    .lock-error { min-height: 1.4rem; color: var(--yellow); font-size: 0.9rem; font-weight: 700; text-align: center; }
-    .lock-hint  { margin-top: 1.5rem; color: rgba(255,255,255,0.25); font-size: 0.72rem; letter-spacing: 0.1em; text-align: center; }
+    .lock-error { min-height: 1.3rem; color: var(--yellow); font-size: 0.88rem; font-weight: 700; text-align: center; }
+    .lock-hint  { margin-top: 1.2rem; color: rgba(255,255,255,0.2); font-size: 0.7rem; letter-spacing: 0.1em; text-align: center; }
 
     /* ====================================================
        MAIN APP
@@ -179,8 +240,7 @@
     .flag-pr span { flex: 1; }
     .flag-pr .r { background: var(--pr-red); }
     .flag-pr .w { background: var(--white); }
-
-    #cityStrip { height: 5px; }  /* color injected by JS from CONCERT.cityColor */
+    #cityStrip { height: 5px; } /* set by JS from activeConcert.cityColor */
 
     /* ====================================================
        HEADER
@@ -202,15 +262,15 @@
       background: repeating-linear-gradient(-45deg, transparent 0, transparent 18px, rgba(255,0,110,0.06) 18px, rgba(255,0,110,0.06) 36px);
     }
 
-    .header-frogs  { font-size: clamp(1.5rem, 5vw, 2.2rem); letter-spacing: 0.3em; margin-bottom: 0.2rem; position: relative; }
-    .header-title  { font-size: clamp(3rem, 12vw, 7rem); color: var(--yellow); text-shadow: 4px 4px 0 var(--pink), 8px 8px 0 rgba(45,0,87,0.9); line-height: 0.95; position: relative; }
-    .header-tagline { font-family: 'Space Grotesk', sans-serif; font-size: clamp(0.6rem, 2vw, 0.82rem); letter-spacing: 0.25em; text-transform: uppercase; color: var(--green); margin-top: 0.6rem; position: relative; }
+    .header-frogs   { font-size: clamp(1.5rem, 5vw, 2.2rem); letter-spacing: 0.3em; margin-bottom: 0.2rem; position: relative; }
+    .header-title   { font-size: clamp(3rem, 12vw, 7rem); color: var(--yellow); text-shadow: 4px 4px 0 var(--pink), 8px 8px 0 rgba(45,0,87,0.9); line-height: 0.95; position: relative; }
+    .header-tagline { font-family: 'Space Grotesk', sans-serif; font-size: clamp(0.58rem, 1.8vw, 0.8rem); letter-spacing: 0.22em; text-transform: uppercase; color: var(--green); margin-top: 0.6rem; position: relative; }
 
     /* ====================================================
        LAYOUT
        ==================================================== */
 
-    .section { max-width: 960px; margin: 0 auto; padding: 2rem 1rem; }
+    .section       { max-width: 960px; margin: 0 auto; padding: 2rem 1rem; }
     .section-title { font-size: clamp(2rem, 6vw, 3.2rem); color: var(--yellow); text-shadow: 2px 2px 0 var(--pink); padding-bottom: 0.5rem; border-bottom: 2px solid rgba(255,0,110,0.4); margin-bottom: 1.4rem; }
     .stripe-dark   { background: rgba(0,0,0,0.25); }
     .stripe-purple { background: linear-gradient(180deg, rgba(45,0,87,0.35) 0%, transparent 100%); }
@@ -228,7 +288,7 @@
       box-shadow: 0 0 40px rgba(255,0,110,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
     }
 
-    .cd-label { font-family: 'Bebas Neue', cursive; font-size: clamp(0.9rem, 2.5vw, 1.2rem); letter-spacing: 0.3em; color: var(--pink); margin-bottom: 1.2rem; }
+    .cd-label { font-family: 'Bebas Neue', cursive; font-size: clamp(0.85rem, 2.2vw, 1.15rem); letter-spacing: 0.28em; color: var(--pink); margin-bottom: 1.2rem; }
 
     .cd-grid { display: flex; justify-content: center; align-items: flex-start; gap: 0.5rem; flex-wrap: nowrap; }
     .cd-unit { display: flex; flex-direction: column; align-items: center; gap: 0.2rem; }
@@ -241,7 +301,6 @@
     .cd-hype.after   { color: var(--yellow); text-shadow: 0 0 30px rgba(255,229,0,0.5); }
 
     @keyframes hypePulse { from { transform: scale(1); } to { transform: scale(1.04); } }
-
     .cd-info { margin-top: 1rem; font-size: 0.82rem; color: rgba(255,255,255,0.5); letter-spacing: 0.1em; }
 
     /* ====================================================
@@ -287,27 +346,19 @@
        ==================================================== */
 
     .news-grid { display: grid; gap: 0.9rem; }
+    .news-section-label { font-size: 0.72rem; color: rgba(255,255,255,0.3); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.8rem; }
+
     .news-card { display: block; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,229,0,0.15); border-radius: 12px; padding: 1rem 1.2rem; text-decoration: none; transition: border-color 0.2s, background 0.2s; }
     .news-card:hover { border-color: rgba(255,229,0,0.5); background: rgba(255,229,0,0.05); }
     .news-date   { font-size: 0.72rem; color: var(--pink); font-weight: 700; letter-spacing: 0.1em; margin-bottom: 0.3rem; }
     .news-title  { font-size: 0.93rem; color: var(--white); line-height: 1.45; margin-bottom: 0.25rem; }
     .news-source { font-size: 0.7rem; color: rgba(255,255,255,0.35); }
-    .news-empty  { text-align: center; padding: 2rem; color: rgba(255,255,255,0.35); font-size: 0.9rem; border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px; }
 
-    /* ====================================================
-       CREW
-       ==================================================== */
+    .news-card.resource { border-color: rgba(57,255,20,0.15); }
+    .news-card.resource:hover { border-color: rgba(57,255,20,0.5); background: rgba(57,255,20,0.04); }
+    .news-card.resource .news-date { color: var(--green); }
 
-    .crew-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
-    .crew-card { background: linear-gradient(160deg, rgba(45,0,87,0.7), rgba(255,0,110,0.1)); border: 2px solid rgba(255,0,110,0.3); border-radius: 18px; padding: 1.3rem 1rem; text-align: center; transition: transform 0.22s, border-color 0.22s, box-shadow 0.22s; cursor: default; }
-    .crew-card:hover { transform: translateY(-5px) scale(1.02); border-color: var(--yellow); box-shadow: 0 8px 30px rgba(255,229,0,0.15); }
-    .crew-card.organizer { border-color: var(--yellow); }
-    .crew-card.organizer:hover { border-color: var(--green); }
-    .crew-emoji { font-size: 2.6rem; margin-bottom: 0.5rem; line-height: 1; }
-    .crew-name  { font-size: 1.25rem; color: var(--white); line-height: 1.2; }
-    .crew-nick  { font-size: 0.72rem; color: var(--pink); letter-spacing: 0.08em; margin: 0.3rem 0 0.7rem; }
-    .crew-badge { display: inline-block; background: var(--green); color: var(--deep); font-family: 'Bebas Neue', cursive; font-size: 0.72rem; letter-spacing: 0.07em; padding: 0.2rem 0.6rem; border-radius: 30px; }
-    .crew-card.organizer .crew-badge { background: var(--yellow); }
+    .news-empty { text-align: center; padding: 2rem; color: rgba(255,255,255,0.35); font-size: 0.9rem; border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px; }
 
     /* ====================================================
        GUIDE — BUTTON + FULL MODAL
@@ -337,7 +388,6 @@
 
     #guideBtn:hover { background: var(--yellow); color: var(--deep); transform: scale(1.1); }
 
-    /* Modal overlay */
     #guideOverlay {
       position: fixed;
       inset: 0;
@@ -352,11 +402,8 @@
 
     #guideOverlay.open { display: flex; }
 
-    @media (min-width: 600px) {
-      #guideOverlay { align-items: center; padding: 1rem; }
-    }
+    @media (min-width: 600px) { #guideOverlay { align-items: center; padding: 1rem; } }
 
-    /* Modal card */
     #guideModal {
       background: var(--purple);
       border: 2px solid var(--pink);
@@ -375,176 +422,41 @@
       #guideModal { border-radius: 20px; box-shadow: 0 20px 80px rgba(0,0,0,0.7); animation: modalFadeIn 0.25s ease; }
     }
 
-    @keyframes modalSlideUp {
-      from { transform: translateY(40px); opacity: 0; }
-      to   { transform: translateY(0);    opacity: 1; }
-    }
+    @keyframes modalSlideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes modalFadeIn  { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-    @keyframes modalFadeIn {
-      from { transform: scale(0.95); opacity: 0; }
-      to   { transform: scale(1);    opacity: 1; }
-    }
+    .guide-header { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 1.4rem 0.8rem; border-bottom: 1px solid rgba(255,0,110,0.3); flex-shrink: 0; }
+    .guide-logo   { font-family: 'Bebas Neue', cursive; font-size: 1.4rem; color: var(--yellow); text-shadow: 2px 2px 0 var(--pink); letter-spacing: 0.05em; }
 
-    /* Modal header */
-    .guide-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.2rem 1.4rem 0.8rem;
-      border-bottom: 1px solid rgba(255,0,110,0.3);
-      flex-shrink: 0;
-    }
-
-    .guide-logo {
-      font-family: 'Bebas Neue', cursive;
-      font-size: 1.4rem;
-      color: var(--yellow);
-      text-shadow: 2px 2px 0 var(--pink);
-      letter-spacing: 0.05em;
-    }
-
-    .guide-close-btn {
-      background: rgba(255,255,255,0.1);
-      border: none;
-      color: rgba(255,255,255,0.7);
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      font-size: 1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s, color 0.2s;
-    }
-
+    .guide-close-btn { background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.7); width: 32px; height: 32px; border-radius: 50%; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s, color 0.2s; }
     .guide-close-btn:hover { background: var(--pink); color: var(--white); }
 
-    /* Tab bar */
-    .guide-tabs {
-      display: flex;
-      overflow-x: auto;
-      gap: 0;
-      padding: 0.6rem 0.8rem 0;
-      flex-shrink: 0;
-      scrollbar-width: none;
-    }
-
+    .guide-tabs { display: flex; overflow-x: auto; gap: 0; padding: 0.6rem 0.8rem 0; flex-shrink: 0; scrollbar-width: none; }
     .guide-tabs::-webkit-scrollbar { display: none; }
 
-    .gtab {
-      flex-shrink: 0;
-      padding: 0.5rem 0.9rem;
-      background: transparent;
-      border: none;
-      border-bottom: 3px solid transparent;
-      color: rgba(255,255,255,0.45);
-      font-family: 'Bebas Neue', cursive;
-      font-size: 1rem;
-      letter-spacing: 0.08em;
-      cursor: pointer;
-      transition: color 0.2s, border-color 0.2s;
-      white-space: nowrap;
-    }
-
+    .gtab { flex-shrink: 0; padding: 0.5rem 0.9rem; background: transparent; border: none; border-bottom: 3px solid transparent; color: rgba(255,255,255,0.45); font-family: 'Bebas Neue', cursive; font-size: 1rem; letter-spacing: 0.08em; cursor: pointer; transition: color 0.2s, border-color 0.2s; white-space: nowrap; }
     .gtab.active { color: var(--yellow); border-bottom-color: var(--pink); }
     .gtab:hover:not(.active) { color: rgba(255,255,255,0.8); }
 
-    /* Tab panels */
     .guide-body { overflow-y: auto; padding: 1.4rem; flex: 1; }
-
     .gpanel { display: none; }
     .gpanel.active { display: block; }
 
-    /* Guide content styles */
-    .gpanel h2 {
-      font-size: 1.6rem;
-      color: var(--yellow);
-      margin-bottom: 0.2rem;
-      line-height: 1.1;
-    }
-
+    .gpanel h2 { font-size: 1.6rem; color: var(--yellow); margin-bottom: 0.2rem; line-height: 1.1; }
     .gpanel .panel-icon { font-size: 2.2rem; margin-bottom: 0.5rem; }
+    .gpanel .tagline { font-size: 0.82rem; color: var(--green); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.2rem; }
 
-    .gpanel .tagline {
-      font-size: 0.82rem;
-      color: var(--green);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 1.2rem;
-    }
-
-    .step {
-      display: flex;
-      gap: 0.8rem;
-      margin-bottom: 1rem;
-      align-items: flex-start;
-    }
-
-    .step-num {
-      flex-shrink: 0;
-      width: 26px;
-      height: 26px;
-      background: var(--pink);
-      color: var(--white);
-      border-radius: 50%;
-      font-family: 'Bebas Neue', cursive;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 1px;
-    }
-
-    .step-text {
-      font-size: 0.88rem;
-      color: rgba(255,255,255,0.85);
-      line-height: 1.6;
-    }
-
+    .step { display: flex; gap: 0.8rem; margin-bottom: 1rem; align-items: flex-start; }
+    .step-num { flex-shrink: 0; width: 26px; height: 26px; background: var(--pink); color: var(--white); border-radius: 50%; font-family: 'Bebas Neue', cursive; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+    .step-text { font-size: 0.88rem; color: rgba(255,255,255,0.85); line-height: 1.6; }
     .step-text strong { color: var(--yellow); font-weight: 700; }
 
-    .code-block {
-      background: rgba(0,0,0,0.4);
-      border: 1px solid rgba(255,229,0,0.2);
-      border-left: 3px solid var(--yellow);
-      border-radius: 6px;
-      padding: 0.7rem 0.9rem;
-      margin: 0.7rem 0;
-      font-size: 0.78rem;
-      font-family: 'Courier New', monospace;
-      color: var(--yellow);
-      line-height: 1.7;
-      overflow-x: auto;
-      white-space: pre;
-    }
+    .code-block { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,229,0,0.2); border-left: 3px solid var(--yellow); border-radius: 6px; padding: 0.7rem 0.9rem; margin: 0.7rem 0; font-size: 0.78rem; font-family: 'Courier New', monospace; color: var(--yellow); line-height: 1.7; overflow-x: auto; white-space: pre; }
 
-    .tip-box {
-      background: rgba(57,255,20,0.08);
-      border: 1px solid rgba(57,255,20,0.3);
-      border-radius: 10px;
-      padding: 0.8rem 1rem;
-      margin-top: 1rem;
-      font-size: 0.82rem;
-      color: rgba(255,255,255,0.8);
-      line-height: 1.6;
-    }
-
+    .tip-box  { background: rgba(57,255,20,0.08); border: 1px solid rgba(57,255,20,0.3); border-radius: 10px; padding: 0.8rem 1rem; margin-top: 1rem; font-size: 0.82rem; color: rgba(255,255,255,0.8); line-height: 1.6; }
     .tip-box strong { color: var(--green); }
-
-    .warn-box {
-      background: rgba(255,0,110,0.08);
-      border: 1px solid rgba(255,0,110,0.3);
-      border-radius: 10px;
-      padding: 0.8rem 1rem;
-      margin-top: 1rem;
-      font-size: 0.82rem;
-      color: rgba(255,255,255,0.8);
-      line-height: 1.6;
-    }
-
+    .warn-box { background: rgba(255,0,110,0.08); border: 1px solid rgba(255,0,110,0.3); border-radius: 10px; padding: 0.8rem 1rem; margin-top: 1rem; font-size: 0.82rem; color: rgba(255,255,255,0.8); line-height: 1.6; }
     .warn-box strong { color: var(--pink); }
-
     .divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 1.2rem 0; }
 
     /* ====================================================
@@ -558,6 +470,7 @@
     /* ====================================================
        SCROLLBAR
        ==================================================== */
+
     ::-webkit-scrollbar       { width: 5px; }
     ::-webkit-scrollbar-track { background: var(--deep); }
     ::-webkit-scrollbar-thumb { background: var(--pink); border-radius: 3px; }
@@ -574,7 +487,15 @@
 <div id="lockScreen">
   <div class="lock-frog">🐸</div>
   <div class="lock-title">RADIO<br>CONEJO</div>
-  <div class="lock-sub" id="lockSub">🇵🇷 · DBMF WORLD TOUR · 🐸</div>
+  <div class="lock-sub" id="lockSub">🇵🇷 · DeBÍ TiRAR MáS FOToS · 2026 · 🐸</div>
+
+  <!-- SHOW PICKER -->
+  <div class="show-picker">
+    <div class="show-picker-label">CHOISIS TON SHOW ▾</div>
+    <div class="show-list" id="showList"><!-- filled by JS --></div>
+  </div>
+
+  <!-- CODE FORM -->
   <form class="lock-form" onsubmit="checkCode(event)">
     <input id="codeInput" class="lock-input" type="password"
       placeholder="código secreto..."
@@ -582,6 +503,7 @@
     <button class="lock-btn" type="submit">ENTRAR 🐸</button>
     <div class="lock-error" id="lockError" aria-live="polite"></div>
   </form>
+
   <div class="lock-hint">sólo el crew sabe la palabra mágica 🤫</div>
 </div>
 
@@ -593,12 +515,12 @@
   <header class="site-header">
     <div class="header-frogs">🐸 🐸 🐸</div>
     <div class="header-title">RADIO CONEJO</div>
-    <div class="header-tagline" id="headerTagline">⚡ BAD BUNNY · DBMF WORLD TOUR ⚡</div>
+    <div class="header-tagline" id="headerTagline">⚡ BAD BUNNY · DBMF WORLD TOUR 2026 ⚡</div>
   </header>
 
-  <!-- Puerto Rico flag strip (always shown — it's who BB is) -->
+  <!-- Puerto Rico flag (always — it's who BB is) -->
   <div class="flag-pr"><span class="r"></span><span class="w"></span><span class="r"></span><span class="w"></span><span class="r"></span></div>
-  <!-- City color strip — filled by JS from CONCERT.cityColor -->
+  <!-- City color strip — set by JS -->
   <div id="cityStrip"></div>
 
   <!-- COUNTDOWN -->
@@ -606,7 +528,7 @@
     <div class="countdown-box">
       <div class="cd-label" id="cdLabel">🏟️ LOADING…</div>
       <div id="cdDisplay"></div>
-      <div class="cd-info" id="cdInfo">Bad Bunny — DBMF World Tour</div>
+      <div class="cd-info" id="cdInfo">Bad Bunny — DeBÍ TiRAR MáS FOToS World Tour 2026</div>
     </div>
   </div>
 
@@ -641,21 +563,14 @@
   <div class="section stripe-purple">
     <div class="section-title">📰 NOTICIAS</div>
     <div id="newsContainer" class="news-grid">
-      <div class="news-empty">🐸 Chargement des dernières news…</div>
+      <div class="news-empty">🐸 Chargement des news…</div>
     </div>
   </div>
 
-  <!-- CREW -->
-  <div class="section stripe-dark">
-    <div class="section-title">🐸 LE CREW</div>
-    <div class="crew-grid" id="crewGrid"></div>
-  </div>
-
   <footer class="site-footer">
-    <p id="footerText">🐸 RADIO CONEJO · DBMF WORLD TOUR 🇵🇷</p>
+    <p id="footerText">🐸 RADIO CONEJO · DeBÍ TiRAR MáS FOToS WORLD TOUR 2026 🇵🇷</p>
     <p style="margin-top:0.4rem">
-      Hecho con 💜 para el crew &nbsp;·&nbsp;
-      <a href="#" onclick="openGuide(event)">? GUIDE</a>
+      Hecho con 💜 &nbsp;·&nbsp; <a href="#" onclick="openGuide(event)">? GUIDE</a>
     </p>
   </footer>
 
@@ -670,22 +585,18 @@
 <div id="guideOverlay" onclick="handleOverlayClick(event)" role="dialog" aria-modal="true" aria-label="Radio Conejo Guide">
   <div id="guideModal">
 
-    <!-- Modal header -->
     <div class="guide-header">
       <div class="guide-logo">🐸 Radio Conejo — Guide</div>
       <button class="guide-close-btn" onclick="closeGuide()" aria-label="Fermer">✕</button>
     </div>
 
-    <!-- Tab bar -->
     <div class="guide-tabs" role="tablist">
       <button class="gtab active" onclick="switchTab(0,this)" role="tab">🔐 CODE</button>
-      <button class="gtab"        onclick="switchTab(1,this)" role="tab">🐸 CREW</button>
-      <button class="gtab"        onclick="switchTab(2,this)" role="tab">🗓️ CONCERT</button>
-      <button class="gtab"        onclick="switchTab(3,this)" role="tab">🎬 VIDÉOS</button>
-      <button class="gtab"        onclick="switchTab(4,this)" role="tab">🚀 GO LIVE</button>
+      <button class="gtab"        onclick="switchTab(1,this)" role="tab">🗓️ CONCERT</button>
+      <button class="gtab"        onclick="switchTab(2,this)" role="tab">🎬 VIDÉOS</button>
+      <button class="gtab"        onclick="switchTab(3,this)" role="tab">🚀 GO LIVE</button>
     </div>
 
-    <!-- Scrollable content -->
     <div class="guide-body">
 
       <!-- ── TAB 0: ACCESS CODE ─────────────────────── -->
@@ -697,14 +608,14 @@
         <div class="step">
           <div class="step-num">1</div>
           <div class="step-text">
-            Quand tu ouvres le site, tu vois un écran de verrouillage. Tape le mot de passe dans la case et appuie sur <strong>ENTRAR</strong>.
+            Quand tu ouvres le site, tu vois l'écran de verrouillage. Choisis d'abord ton concert dans la liste, puis tape le mot de passe et appuie sur <strong>ENTRAR</strong>.
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">2</div>
           <div class="step-text">
-            Le code par défaut est <strong>conejo</strong> (lapin en espagnol 🐰). Simple, non ?
+            Le code par défaut est <strong>conejo</strong> (lapin en espagnol 🐰). Simple!
           </div>
         </div>
 
@@ -713,12 +624,12 @@
           <div class="step-text">
             Pour changer le code, ouvre <strong>RadioConejo.html</strong> dans un éditeur de texte (Bloc-notes, TextEdit, VS Code…). Cherche cette ligne en haut du script:
             <div class="code-block">const ACCESS_CODE = 'conejo';</div>
-            Remplace <strong>conejo</strong> par n'importe quel mot. Ex: <strong>dbmf2025</strong>.
+            Remplace <strong>conejo</strong> par ton propre mot. Ex: <strong>dbmf2026</strong>.
           </div>
         </div>
 
         <div class="tip-box">
-          <strong>💡 Bon à savoir</strong> — une fois connecté, le site reste déverrouillé pendant toute la session (jusqu'à la fermeture de l'onglet). Pas besoin de retaper à chaque fois.
+          <strong>💡 Bon à savoir</strong> — une fois connecté, le site reste déverrouillé pendant toute la session du navigateur. Le concert choisi est aussi mémorisé.
         </div>
 
         <div class="warn-box">
@@ -726,116 +637,51 @@
         </div>
       </div>
 
-      <!-- ── TAB 1: CREW ─────────────────────────────── -->
+      <!-- ── TAB 1: CONCERT ──────────────────────────── -->
       <div class="gpanel" id="gpanel-1">
-        <div class="panel-icon">🐸</div>
-        <h2>Ajouter / Retirer du Crew</h2>
-        <div class="tagline">Chaque membre = une ligne de code</div>
+        <div class="panel-icon">🗓️</div>
+        <h2>Changer de Concert</h2>
+        <div class="tagline">Sélecteur intégré · Ou modifier le code</div>
 
         <div class="step">
           <div class="step-num">1</div>
           <div class="step-text">
-            Ouvre <strong>RadioConejo.html</strong> dans un éditeur de texte. Cherche le tableau <strong>CREW</strong> dans le script — ça ressemble à ça:
-            <div class="code-block">const CREW = [
-  { name: 'Norman', nickname: 'El Organizador', emoji: '🐰', organizer: true },
-  { name: 'Sofia',  nickname: 'La Visionaria',  emoji: '🌟' },
-  // ... etc
-];</div>
+            <strong>Depuis l'écran de verrouillage</strong> — utilise les boutons de sélection de concert. Clique sur une ville pour changer le countdown, les couleurs et les infos du show. C'est tout!
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">2</div>
           <div class="step-text">
-            <strong>Ajouter quelqu'un</strong> — copie une ligne existante, colle-la en dessous, et change le nom, le surnom et l'emoji. N'oublie pas la virgule à la fin de chaque ligne (sauf la dernière).
+            <strong>Ajouter un nouveau show</strong> — ouvre le fichier dans un éditeur et cherche le tableau <strong>DBMF_SHOWS</strong>. Chaque ligne = un show:
+            <div class="code-block">{ city: 'Marseille', venue: 'Orange Vélodrome',
+  date: '2026-07-01T21:00:00',
+  flag: '🇫🇷', cityColor: '#009EE0' },</div>
+            Copie une ligne, colle-la, et change les valeurs.
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">3</div>
           <div class="step-text">
-            <strong>Retirer quelqu'un</strong> — efface sa ligne entière. Vérifie que la ligne précédente se termine par une virgule.
+            <strong>cityColor</strong> est le code couleur hexadécimal de la ville ou du club local (ex: OM blue pour Marseille). Cherche "couleur principale [nom club/ville]" sur Google.
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">4</div>
           <div class="step-text">
-            Le champ <strong>organizer: true</strong> donne un badge spécial 👑 — parfait pour l'organisateur. Il n'y en a qu'un normalement!
+            <strong>Show par défaut</strong> — change la variable <strong>DEFAULT_SHOW_INDEX</strong> (0 = premier show de la liste) pour choisir quel show s'affiche au premier chargement.
           </div>
         </div>
 
         <div class="tip-box">
-          <strong>💡 Trouver un emoji</strong> — sur Mac: appuie sur <strong>Ctrl + Cmd + Espace</strong>. Sur Windows: appuie sur <strong>Win + .</strong> pour ouvrir le clavier emoji.
+          <strong>💡 Forker pour un autre pote</strong> — copie RadioConejo.html, renomme-le (ex: RadioConejoLondres.html), change <code>DEFAULT_SHOW_INDEX</code> et pousse-le sur un autre repo GitHub.
         </div>
       </div>
 
-      <!-- ── TAB 2: CONCERT ──────────────────────────── -->
+      <!-- ── TAB 2: VIDÉOS ──────────────────────────── -->
       <div class="gpanel" id="gpanel-2">
-        <div class="panel-icon">🗓️</div>
-        <h2>Changer de Concert</h2>
-        <div class="tagline">Une autre ville · Une autre date</div>
-
-        <div class="step">
-          <div class="step-num">1</div>
-          <div class="step-text">
-            Cherche le bloc <strong>CONCERT</strong> tout en haut du script. Il ressemble à ça:
-            <div class="code-block">const CONCERT = {
-  artist:    'Bad Bunny',
-  tour:      'DeBÍ TiRAR MáS FOToS',
-  city:      'Marseille',
-  venue:     'Orange Vélodrome',
-  date:      '2025-07-01T21:00:00',
-  flag:      '🇫🇷',
-  cityColor: '#009EE0',
-};</div>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-text">
-            Change <strong>city</strong>, <strong>venue</strong>, <strong>date</strong>, <strong>flag</strong> et <strong>cityColor</strong> pour ton concert. Le format de la date: <strong>ANNÉE-MOIS-JOURTHHEURE:MIN:SEC</strong> — par exemple <strong>2025-08-15T20:30:00</strong>.
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">3</div>
-          <div class="step-text">
-            <strong>cityColor</strong> est la couleur principale de ta ville ou de la salle. C'est un code hexadécimal (le # suivi de 6 chiffres/lettres). Cherche "couleur principale [nom ville]" sur Google pour en trouver une.
-          </div>
-        </div>
-
-        <hr class="divider">
-        <p style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:0.8rem;letter-spacing:0.05em">📋 AUTRES DATES DBMF — exemples pour forker</p>
-
-        <div class="code-block">// Madrid — 12 juin 2025 (Santiago Bernabéu)
-city: 'Madrid',  venue: 'Estadio Santiago Bernabéu',
-date: '2025-06-12T21:00:00',  flag: '🇪🇸',
-cityColor: '#EE2020',
-
-// Paris — 19 & 20 juin 2025 (Stade de France)
-city: 'Paris',  venue: 'Stade de France',
-date: '2025-06-19T21:00:00',  flag: '🇫🇷',
-cityColor: '#003189',
-
-// Londres — 6 juillet 2025 (Tottenham Hotspur)
-city: 'London',  venue: 'Tottenham Hotspur Stadium',
-date: '2025-07-06T20:00:00',  flag: '🇬🇧',
-cityColor: '#132257',
-
-// San Juan — 23 août 2025 (Estadio Hiram Bithorn)
-city: 'San Juan', venue: 'Estadio Hiram Bithorn',
-date: '2025-08-23T21:00:00',  flag: '🇵🇷',
-cityColor: '#C8102E',</div>
-
-        <div class="tip-box">
-          <strong>💡 Forker le site</strong> — tu veux faire une version pour un autre pote qui va à un autre show? Copie RadioConejo.html, renomme-le (ex: RadioConejoMadrid.html), et change juste le bloc CONCERT + le tableau CREW.
-        </div>
-      </div>
-
-      <!-- ── TAB 3: VIDÉOS ──────────────────────────── -->
-      <div class="gpanel" id="gpanel-3">
         <div class="panel-icon">🎬</div>
         <h2>Swapper les Vidéos</h2>
         <div class="tagline">YouTube IDs · Copier-coller</div>
@@ -850,14 +696,14 @@ cityColor: '#C8102E',</div>
         <div class="step">
           <div class="step-num">2</div>
           <div class="step-text">
-            Pour trouver l'ID YouTube d'une vidéo: ouvre la vidéo sur YouTube. Regarde l'URL — la partie après <strong>?v=</strong> est l'ID. Par exemple dans <strong>youtube.com/watch?v=HQnC1UHBvWA</strong>, l'ID est <strong>HQnC1UHBvWA</strong>.
+            Pour trouver l'ID YouTube d'une vidéo: ouvre la vidéo sur YouTube. Regarde l'URL — la partie après <strong>?v=</strong> est l'ID. Ex: dans <strong>youtube.com/watch?v=HQnC1UHBvWA</strong>, l'ID est <strong>HQnC1UHBvWA</strong>.
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">3</div>
           <div class="step-text">
-            Remplace l'ID dans le tableau. Les IDs qui se terminent par <strong>_YT</strong> sont des placeholders — ils doivent absolument être remplacés pour que la vidéo s'affiche.
+            Remplace l'ID dans le tableau. Les IDs terminant par <strong>_YT</strong> sont des placeholders — remplace-les pour que la vidéo s'affiche.
             <div class="code-block">{ label: '🎬 Mon titre', youtubeId: 'HQnC1UHBvWA' },</div>
           </div>
         </div>
@@ -865,17 +711,17 @@ cityColor: '#C8102E',</div>
         <div class="step">
           <div class="step-num">4</div>
           <div class="step-text">
-            La grille affiche 1, 2 ou 4 vidéos selon le bouton sélectionné. Les 4 premières entrées du tableau sont utilisées pour la grille 4 panneaux.
+            Les boutons <strong>1 / 2 / 4</strong> changent la grille d'affichage. La grille 4 panneaux utilise les 4 premières entrées du tableau.
           </div>
         </div>
 
         <div class="tip-box">
-          <strong>💡 Track du jour</strong> — tu peux aussi mettre à jour les IDs dans le tableau <strong>DAILY_TRACKS</strong> de la même façon. Chaque track a un champ <strong>youtubeId</strong>.
+          <strong>💡 Track du jour</strong> — tu peux aussi mettre à jour les IDs YouTube dans le tableau <strong>DAILY_TRACKS</strong> de la même façon.
         </div>
       </div>
 
-      <!-- ── TAB 4: DÉPLOIEMENT ─────────────────────── -->
-      <div class="gpanel" id="gpanel-4">
+      <!-- ── TAB 3: GO LIVE ─────────────────────────── -->
+      <div class="gpanel" id="gpanel-3">
         <div class="panel-icon">🚀</div>
         <h2>Mettre en Ligne</h2>
         <div class="tagline">GitHub Pages · Gratuit · 5 minutes</div>
@@ -890,39 +736,37 @@ cityColor: '#C8102E',</div>
         <div class="step">
           <div class="step-num">2</div>
           <div class="step-text">
-            Clique sur <strong>New repository</strong> (le bouton vert). Donne-lui un nom, ex: <strong>radio-conejo</strong>. Coche <strong>Public</strong>. Clique <strong>Create repository</strong>.
+            Clique <strong>New repository</strong> (bouton vert). Nomme-le <strong>radio-conejo</strong>. Coche <strong>Public</strong>. Clique <strong>Create repository</strong>.
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">3</div>
           <div class="step-text">
-            Dans ton nouveau repo, clique <strong>Add file → Upload files</strong>. Glisse <strong>RadioConejo.html</strong> et <strong>index.html</strong> dans la zone de dépôt. Clique <strong>Commit changes</strong>.
+            Clique <strong>Add file → Upload files</strong>. Glisse <strong>RadioConejo.html</strong> et <strong>index.html</strong>. Clique <strong>Commit changes</strong>.
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">4</div>
           <div class="step-text">
-            Va dans <strong>Settings → Pages</strong> (dans le menu de gauche). Sous <strong>Source</strong>, choisis <strong>Deploy from a branch</strong>, sélectionne <strong>main</strong> et <strong>/ (root)</strong>. Clique <strong>Save</strong>.
+            Va dans <strong>Settings → Pages</strong>. Sous <strong>Source</strong>, choisis <strong>Deploy from a branch → main → / (root)</strong>. Clique <strong>Save</strong>.
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">5</div>
           <div class="step-text">
-            Attends 1-2 minutes, rafraîchis la page. Ton URL sera:<br>
-            <strong>https://[ton-username].github.io/radio-conejo/</strong><br>
-            Partage-la avec le crew! 🐸
+            Attends 2 minutes, rafraîchis. Ton URL: <strong>https://[username].github.io/radio-conejo/</strong> — partage! 🐸
           </div>
         </div>
 
         <div class="tip-box">
-          <strong>💡 Mettre à jour</strong> — pour changer quelque chose après la mise en ligne, retourne dans ton repo GitHub, clique sur le fichier, puis sur le crayon ✏️ pour l'éditer directement dans le navigateur. Sauvegarde et le site se met à jour automatiquement.
+          <strong>💡 Mettre à jour</strong> — retourne dans ton repo GitHub, clique le fichier puis le crayon ✏️ pour éditer directement dans le navigateur. Sauvegarde et c'est en ligne instantanément.
         </div>
 
         <div class="warn-box">
-          <strong>⚠️ Le site est public</strong> — n'importe qui avec le lien peut voir la page de connexion (mais pas entrer sans le code). Si tu veux garder le lien discret, évite de le poster sur des réseaux publics.
+          <strong>⚠️ Le site est public</strong> — n'importe qui avec le lien voit l'écran de connexion, mais pas le contenu sans le code.
         </div>
       </div>
 
@@ -932,62 +776,43 @@ cityColor: '#C8102E',</div>
 
 <script>
   /* ====================================================
-     ⚙️  CONFIGURATION — Modifie ces lignes pour personaliser
+     ⚙️  CONFIGURATION — Modifie ici pour personnaliser
      ==================================================== */
 
-  // 🔐 Code d'accès — change 'conejo' pour ton propre mot de passe
+  // 🔐 Code d'accès
   const ACCESS_CODE = 'conejo';
 
-  // 🎪 CONCERT — change ces 6 champs pour un autre show
-  // Toutes les références à la ville, la salle et la date sont tirées d'ici.
-  const CONCERT = {
-    artist:    'Bad Bunny',
-    tour:      'DeBÍ TiRAR MáS FOToS',
-    city:      'Marseille',
-    venue:     'Orange Vélodrome',
-    date:      '2025-07-01T21:00:00',   // format: YYYY-MM-DDTHH:MM:SS (heure locale)
-    flag:      '🇫🇷',
-    cityColor: '#009EE0',               // couleur de la ville/salle (OM blue pour Marseille)
-  };
-
-  /*
-  ┌─────────────────────────────────────────────────────────────────┐
-  │  🗓️  AUTRES DATES DBMF — copie-colle un bloc dans CONCERT       │
-  ├─────────────────────────────────────────────────────────────────┤
-  │  Madrid    · 12 juin 2025  · Bernabéu         · flag: '🇪🇸'     │
-  │  Paris     · 19 juin 2025  · Stade de France  · flag: '🇫🇷'     │
-  │  Marseille · 1 juil 2025   · Orange Vélodrome · flag: '🇫🇷'     │
-  │  London    · 6 juil 2025   · Tottenham H.     · flag: '🇬🇧'     │
-  │  Amsterdam · 12 juil 2025  · Johan Cruyff AE  · flag: '🇳🇱'     │
-  │  Berlin    · 18 juil 2025  · Waldbühne        · flag: '🇩🇪'     │
-  │  San Juan  · 23 août 2025  · Hiram Bithorn    · flag: '🇵🇷'     │
-  └─────────────────────────────────────────────────────────────────┘
-  */
-
-  // ——————————————————————————————————————————————————
-  // 🐸 CREW — Ajoute/retire des membres ici
-  // { name, nickname, emoji, organizer? }
-  // ——————————————————————————————————————————————————
-  const CREW = [
-    { name: 'Norman',    nickname: 'El Organizador',    emoji: '🐰', organizer: true },
-    { name: 'Sofia',     nickname: 'La Visionaria',     emoji: '🌟' },
-    { name: 'Carlos',    nickname: 'El DJ del Crew',    emoji: '🎧' },
-    { name: 'Valentina', nickname: 'La Fotógrafa',      emoji: '📸' },
-    { name: 'Diego',     nickname: 'El Hype Man',       emoji: '🔥' },
-    { name: 'Isabela',   nickname: 'La Bailarina',      emoji: '💃' },
+  // 🎪 DeBÍ TiRAR MáS FOToS WORLD TOUR 2026 — Liste des shows
+  // Ajoute/modifie des shows ici. Le sélecteur sur l'écran de verrouillage
+  // se met à jour automatiquement.
+  const DBMF_SHOWS = [
+    { city: 'Madrid',      venue: 'Estadio Santiago Bernabéu',    date: '2026-06-12T21:00:00', flag: '🇪🇸', cityColor: '#EE2020' },
+    { city: 'Paris',       venue: 'Stade de France',               date: '2026-06-19T21:00:00', flag: '🇫🇷', cityColor: '#003189' },
+    { city: 'Marseille',   venue: 'Orange Vélodrome',              date: '2026-07-01T21:00:00', flag: '🇫🇷', cityColor: '#009EE0' },
+    { city: 'London',      venue: 'Tottenham Hotspur Stadium',     date: '2026-07-06T20:00:00', flag: '🇬🇧', cityColor: '#132257' },
+    { city: 'Amsterdam',   venue: 'Johan Cruyff Arena',            date: '2026-07-12T20:00:00', flag: '🇳🇱', cityColor: '#FF6B00' },
+    { city: 'Berlin',      venue: 'Olympiastadion',                date: '2026-07-18T20:00:00', flag: '🇩🇪', cityColor: '#1A1A1A' },
+    { city: 'San Juan',    venue: 'Estadio Hiram Bithorn',         date: '2026-08-23T21:00:00', flag: '🇵🇷', cityColor: '#C8102E' },
   ];
+
+  // 🎯 Index du show affiché par défaut (0 = Madrid, 2 = Marseille, etc.)
+  const DEFAULT_SHOW_INDEX = 2; // Marseille
+
+  // Constantes artiste/tour (ne change pas par show)
+  const ARTIST = 'Bad Bunny';
+  const TOUR   = 'DeBÍ TiRAR MáS FOToS';
 
   // ——————————————————————————————————————————————————
   // 🎵 DAILY TRACKS — Tourne par jour de l'année
   // { title, album, note, youtubeId }
-  // IDs marqués _YT = placeholders à remplacer
+  // IDs terminant par _YT = placeholders à remplacer
   // ——————————————————————————————————————————————————
   const DAILY_TRACKS = [
     { title: 'Tití Me Preguntó',          album: 'Un Verano Sin Ti',                    note: 'El himno del verano 2022. Imposible no perrear con esto.',                        youtubeId: 'HQnC1UHBvWA' },
     { title: 'Me Porto Bonito',            album: 'Un Verano Sin Ti ft. Chencho',        note: 'Dos voces, un banga. Dúo imbatible del reggaeton moderno.',                       youtubeId: 'fsRbfTpL9_o' },
     { title: 'Efecto',                     album: 'Un Verano Sin Ti',                    note: 'El track más sensual del álbum. Un efecto que no se puede ignorar.',              youtubeId: 'GRoZKIuELW4' },
     { title: 'Moscow Mule',                album: 'Un Verano Sin Ti',                    note: 'Siete minutos de puro flow. Una obra maestra caribeña.',                          youtubeId: 'JRrK2j9ulNE' },
-    { title: 'Ojitos Lindos',              album: 'Un Verano Sin Ti ft. Bomba Estéreo',  note: 'Cumbia psicodélica boricua. La colaboración más inesperada. Perfecto.',           youtubeId: 'p9akAFoVRJs' },
+    { title: 'Ojitos Lindos',              album: 'Un Verano Sin Ti ft. Bomba Estéreo',  note: 'Cumbia psicodélica boricua. La colaboración más inesperada.',                     youtubeId: 'p9akAFoVRJs' },
     { title: 'Neverita',                   album: 'Un Verano Sin Ti',                    note: 'Chill vibras pero el flow no para. La botellita fría del verano eterno.',         youtubeId: 'EuKvI9A1x3w' },
     { title: 'Después de la Playa',        album: 'Un Verano Sin Ti',                    note: 'El cierre de playa perfecto. Arena, sol, y Bad Bunny.',                           youtubeId: 'sO_zGYYdGLs' },
     { title: 'Me Fui de Vacaciones',       album: 'Un Verano Sin Ti',                    note: 'Pura aventura caribeña. Flow supremo.',                                           youtubeId: 'O2TTOQ9AAGI' },
@@ -999,7 +824,7 @@ cityColor: '#C8102E',</div>
     { title: 'MIA ft. Drake',              album: 'X 100PRE',                            note: 'Bunny x Drake. Histórico. El día que el mundo miró a Puerto Rico.',               youtubeId: 'UivqAFMHCZs' },
     { title: 'AMORFODA',                   album: 'X 100PRE',                            note: 'Desamor en modo trap. Clásico instantáneo. BB al descubierto.',                   youtubeId: 'qr_JiHqjx8w' },
     { title: 'Si Veo a Tu Mamá',           album: 'YHLQMDLG',                           note: 'Smooth como la seda. Flow sin esfuerzo. El BB más chill y más letal.',            youtubeId: 'zcUMr9YGZLY' },
-    { title: 'YO PERREO SOLA',             album: 'YHLQMDLG',                           note: 'Himno feminista de perreo. Iconico. BB de mujer, rompiendo todo.',                youtubeId: 'GXSoKzFUVZQ' },
+    { title: 'YO PERREO SOLA',             album: 'YHLQMDLG',                           note: 'Himno feminista de perreo. Icónico. BB de mujer, rompiendo todo.',               youtubeId: 'GXSoKzFUVZQ' },
     { title: 'VETE',                        album: 'YHLQMDLG',                           note: 'El desamor más bailable de 2020. Tú te vas pero el track se queda.',              youtubeId: 'p1gJEr_g3ks' },
     { title: 'ESTÁ CABRÓN SER YO',         album: 'YHLQMDLG',                           note: 'Confianza al máximo. Bienvenidos al mundo de BB.',                                youtubeId: 'L0bQpOEVWv8' },
     { title: 'El Apagón',                  album: 'Un Verano Sin Ti',                    note: 'Himno político de Puerto Rico. Necesario, poderoso, perfecto.',                   youtubeId: 'NNLnDNNkiGo' },
@@ -1017,57 +842,135 @@ cityColor: '#C8102E',</div>
 
   // ——————————————————————————————————————————————————
   // 🎬 VIDEO PANES — Remplace les IDs YouTube
-  // { label, youtubeId }
-  // IDs terminant par _YT sont des placeholders
+  // { label, youtubeId }  — _YT = placeholder
   // ——————————————————————————————————————————————————
   const VIDEO_PANES = [
     { label: '🐸 WHERE SHE GOES — Vidéo Officielle',    youtubeId: 'Xk0hXXBmkXU' },
     { label: '🇵🇷 El Apagón — Vidéo Officielle',        youtubeId: 'NNLnDNNkiGo' },
     { label: '💜 DÁKITI — Vidéo Officielle',             youtubeId: 'GZEbxgLGAuc' },
-    { label: '🏟️ DBMF Tour — Live Highlights',          youtubeId: 'dbmf_live_YT' },
+    { label: '🏟️ DBMF Tour 2026 — Live Highlights',     youtubeId: 'dbmf_live_YT' },
     { label: '🎵 Tití Me Preguntó — Vidéo Officielle',  youtubeId: 'HQnC1UHBvWA' },
     { label: '🔥 YO PERREO SOLA — Vidéo Officielle',    youtubeId: 'GXSoKzFUVZQ' },
   ];
 
+  // ——————————————————————————————————————————————————
+  // 📰 CURATED LINKS — Always-visible fallback for news.
+  // Update these URLs whenever you want fresh content.
+  // ——————————————————————————————————————————————————
+  const CURATED_LINKS = [
+    {
+      date: '2026',
+      title: 'Bad Bunny — DeBÍ TiRAR MáS FOToS · Écouter l\'album complet',
+      source: 'YouTube · Bad Bunny',
+      url: 'https://www.youtube.com/channel/UCxoq-PAQeAdk_zyg8YS0JqA',
+    },
+    {
+      date: '2026',
+      title: 'Bad Bunny DBMF World Tour 2026 — Toutes les dates & infos',
+      source: 'setlist.fm',
+      url: 'https://www.setlist.fm/search?query=bad+bunny',
+    },
+    {
+      date: '2026',
+      title: 'Toute l\'actualité Bad Bunny — Rolling Stone en Español',
+      source: 'Rolling Stone ES',
+      url: 'https://es.rollingstone.com/tag/bad-bunny/',
+    },
+    {
+      date: '2026',
+      title: 'Bad Bunny on Billboard — Charts, News & More',
+      source: 'Billboard',
+      url: 'https://www.billboard.com/artist/bad-bunny/',
+    },
+    {
+      date: '2026',
+      title: 'Bad Bunny — Page officielle Instagram',
+      source: '@badbunnypr · Instagram',
+      url: 'https://www.instagram.com/badbunnypr/',
+    },
+    {
+      date: '2026',
+      title: 'Écouter Bad Bunny sur Spotify — Tous les albums',
+      source: 'Spotify',
+      url: 'https://open.spotify.com/artist/4q3ewBCX7sLwd24euuV69X',
+    },
+  ];
+
   /* ====================================================
-     INIT — Injecte les données CONCERT dans le DOM
+     SHOW PICKER STATE
      ==================================================== */
 
-  (function initConcert() {
-    const d       = new Date(CONCERT.date);
-    const year    = d.getFullYear();
+  // Active show — loaded from sessionStorage or falls back to default
+  let activeShowIdx = parseInt(sessionStorage.getItem('rc_show') ?? DEFAULT_SHOW_INDEX, 10);
+  if (activeShowIdx < 0 || activeShowIdx >= DBMF_SHOWS.length) activeShowIdx = DEFAULT_SHOW_INDEX;
 
-    // Format date for display
-    const dateStr = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-    const dateShort = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+  function getActiveConcert() {
+    return { ...DBMF_SHOWS[activeShowIdx], artist: ARTIST, tour: TOUR };
+  }
 
-    // Page title
-    document.title = `🐸 Radio Conejo — ${CONCERT.city} ${year}`;
+  /* ====================================================
+     SHOW PICKER — Render on lock screen
+     ==================================================== */
 
-    // Lock screen subtitle
-    document.getElementById('lockSub').textContent =
-      `🇵🇷 · ${CONCERT.tour} · ${CONCERT.city} ${CONCERT.flag}`;
+  (function renderShowPicker() {
+    const list = document.getElementById('showList');
 
-    // Header tagline
-    document.getElementById('headerTagline').textContent =
-      `⚡ ${CONCERT.artist} · ${CONCERT.tour} World Tour · ${CONCERT.venue} · ${CONCERT.city} · ${dateStr} ${CONCERT.flag} ⚡`;
-
-    // City color strip (2-tone: cityColor + white, like OM blue/white)
-    document.getElementById('cityStrip').style.background =
-      `linear-gradient(90deg, ${CONCERT.cityColor} 50%, #ffffff 50%)`;
-
-    // Countdown venue label
-    document.getElementById('cdLabel').innerHTML =
-      `🏟️ &nbsp; ${CONCERT.venue} · ${CONCERT.city} · ${dateStr}`;
-
-    // Countdown tour info
-    document.getElementById('cdInfo').textContent =
-      `${CONCERT.artist} — ${CONCERT.tour} World Tour`;
-
-    // Footer
-    document.getElementById('footerText').innerHTML =
-      `🐸 RADIO CONEJO &nbsp;·&nbsp; ${CONCERT.tour.toUpperCase()} WORLD TOUR &nbsp;·&nbsp; ${CONCERT.city.toUpperCase()} ${year} &nbsp;🇵🇷`;
+    list.innerHTML = DBMF_SHOWS.map((show, i) => {
+      const d = new Date(show.date);
+      const dateLabel = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+      const isActive  = i === activeShowIdx;
+      return `
+        <button class="show-btn${isActive ? ' active' : ''}" onclick="selectShow(${i}, this)">
+          <span class="show-flag">${show.flag}</span>
+          <span class="show-city">${show.city}</span>
+          <span class="show-date">${dateLabel}</span>
+        </button>`;
+    }).join('');
   })();
+
+  function selectShow(idx, btn) {
+    activeShowIdx = idx;
+    sessionStorage.setItem('rc_show', idx);
+    document.querySelectorAll('.show-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    // If already unlocked, refresh concert data live
+    if (document.getElementById('mainApp').classList.contains('visible')) {
+      applyActiveConcert();
+    }
+  }
+
+  /* ====================================================
+     INIT CONCERT — Inject active show into DOM
+     ==================================================== */
+
+  function applyActiveConcert() {
+    const c       = getActiveConcert();
+    const d       = new Date(c.date);
+    const year    = d.getFullYear();
+    const dateStr = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    document.title = `🐸 Radio Conejo — ${c.city} ${year}`;
+
+    document.getElementById('lockSub').textContent =
+      `🇵🇷 · ${c.tour} · ${c.city} ${c.flag}`;
+
+    document.getElementById('headerTagline').textContent =
+      `⚡ ${c.artist} · ${c.tour} World Tour 2026 · ${c.venue} · ${c.city} · ${dateStr} ${c.flag} ⚡`;
+
+    document.getElementById('cityStrip').style.background =
+      `linear-gradient(90deg, ${c.cityColor} 50%, #ffffff 50%)`;
+
+    document.getElementById('cdLabel').innerHTML =
+      `🏟️ &nbsp; ${c.venue} · ${c.city} · ${dateStr}`;
+
+    document.getElementById('cdInfo').textContent =
+      `${c.artist} — ${c.tour} World Tour 2026`;
+
+    document.getElementById('footerText').innerHTML =
+      `🐸 RADIO CONEJO &nbsp;·&nbsp; ${c.tour.toUpperCase()} WORLD TOUR 2026 &nbsp;·&nbsp; ${c.city.toUpperCase()} &nbsp;🇵🇷`;
+  }
+
+  applyActiveConcert();
 
   /* ====================================================
      LOCK SCREEN
@@ -1106,10 +1009,12 @@ cityColor: '#C8102E',</div>
     document.getElementById('lockScreen').style.display = 'none';
     const app = document.getElementById('mainApp');
     app.classList.add('visible');
-    const btn = document.getElementById('guideBtn');
-    btn.style.display = 'flex';
+    document.getElementById('guideBtn').style.display = 'flex';
+    applyActiveConcert(); // re-apply in case show was changed on lock screen
+    loadNews();           // load news only after unlock
   }
 
+  // Skip lock if already unlocked this session
   if (sessionStorage.getItem('rc_ok') === '1') {
     document.getElementById('lockScreen').style.display = 'none';
     const app = document.getElementById('mainApp');
@@ -1117,6 +1022,7 @@ cityColor: '#C8102E',</div>
     app.style.animation = 'none';
     app.style.opacity   = '1';
     document.getElementById('guideBtn').style.display = 'flex';
+    loadNews();
   }
 
   /* ====================================================
@@ -1126,11 +1032,12 @@ cityColor: '#C8102E',</div>
   function pad(n) { return String(n).padStart(2, '0'); }
 
   function renderCountdown() {
+    const c           = getActiveConcert();
     const now         = new Date();
-    const concertDate = new Date(CONCERT.date);
+    const concertDate = new Date(c.date);
     const diff        = concertDate - now;
     const el          = document.getElementById('cdDisplay');
-    const city        = CONCERT.city.toUpperCase();
+    const city        = c.city.toUpperCase();
 
     const sameDay = now.getFullYear() === concertDate.getFullYear()
                  && now.getMonth()    === concertDate.getMonth()
@@ -1141,7 +1048,6 @@ cityColor: '#C8102E',</div>
       const hrs  = Math.floor((diff % 86400000) / 3600000);
       const mins = Math.floor((diff % 3600000)  / 60000);
       const secs = Math.floor((diff % 60000)    / 1000);
-
       el.innerHTML = `
         <div class="cd-grid">
           <div class="cd-unit"><div class="cd-num">${pad(days)}</div><div class="cd-lbl">jours</div></div>
@@ -1157,8 +1063,7 @@ cityColor: '#C8102E',</div>
         <div class="cd-hype tonight">C'EST CE SOIR 🐸🔥</div>
         <div style="color:var(--green);font-size:1.1rem;margin-top:0.6rem;letter-spacing:0.1em">${city} NOUS ATTEND !!!</div>`;
     } else {
-      const d = new Date(CONCERT.date);
-      const dateLabel = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
+      const dateLabel = concertDate.toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' }).toUpperCase();
       el.innerHTML = `
         <div class="cd-hype after">ON Y ÉTAIT 🐸💜</div>
         <div style="color:var(--yellow);font-size:0.95rem;margin-top:0.6rem;letter-spacing:0.1em">
@@ -1182,7 +1087,7 @@ cityColor: '#C8102E',</div>
     const isHolder = track.youtubeId.endsWith('_YT');
 
     const videoHTML = isHolder
-      ? `<div class="placeholder-video">🎬 Remplace l'ID <strong>${track.youtubeId}</strong> dans DAILY_TRACKS — voir l'onglet Vidéos dans le Guide</div>`
+      ? `<div class="placeholder-video">🎬 Remplace l'ID <strong>${track.youtubeId}</strong> dans DAILY_TRACKS par un vrai ID YouTube</div>`
       : `<div class="daily-video"><iframe src="https://www.youtube.com/embed/${track.youtubeId}?rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
 
     document.getElementById('dailyCard').innerHTML = `
@@ -1204,7 +1109,6 @@ cityColor: '#C8102E',</div>
     const grid  = document.getElementById('videoGrid');
     grid.className = `video-grid g${cols}`;
     const count = Math.min(cols === 1 ? 1 : cols === 2 ? 2 : 4, VIDEO_PANES.length);
-
     grid.innerHTML = VIDEO_PANES.slice(0, count).map(v => {
       const isHolder = v.youtubeId.endsWith('_YT');
       const body = isHolder
@@ -1223,53 +1127,96 @@ cityColor: '#C8102E',</div>
   renderVideos(1);
 
   /* ====================================================
-     CREW
-     ==================================================== */
-
-  (function renderCrew() {
-    document.getElementById('crewGrid').innerHTML = CREW.map(m => `
-      <div class="crew-card${m.organizer ? ' organizer' : ''}">
-        <div class="crew-emoji">${m.emoji}</div>
-        <div class="crew-name">${m.name}</div>
-        <div class="crew-nick">${m.nickname}</div>
-        <span class="crew-badge">${m.organizer ? '👑 ORGANIZADOR' : "I'M GOING 🐸"}</span>
-      </div>
-    `).join('');
-  })();
-
-  /* ====================================================
      NEWS FEED
+     Multi-tier: rss2json → allorigins → curated fallback
      ==================================================== */
 
-  (async function loadNews() {
-    const container = document.getElementById('newsContainer');
-    const query     = encodeURIComponent(`${CONCERT.artist} ${CONCERT.tour} tour`);
-    try {
-      const rss  = encodeURIComponent(`https://news.google.com/rss/search?q=${query}&hl=fr&gl=FR&ceid=FR:fr`);
-      const res  = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rss}&count=6`);
-      const data = await res.json();
+  function renderCuratedFallback(container) {
+    container.innerHTML = `
+      <div class="news-section-label">🔗 Liens & Ressources Bad Bunny</div>
+      ${CURATED_LINKS.map(item => `
+        <a class="news-card resource" href="${item.url}" target="_blank" rel="noopener noreferrer">
+          <div class="news-date">📌 ${item.date}</div>
+          <div class="news-title">${item.title}</div>
+          <div class="news-source">${item.source}</div>
+        </a>`).join('')}`;
+  }
 
-      if (data.status !== 'ok' || !data.items?.length) throw new Error('empty');
+  function parseRssItems(xmlText) {
+    const items = [];
+    const rx    = /<item>([\s\S]*?)<\/item>/g;
+    let m;
+    while ((m = rx.exec(xmlText)) !== null && items.length < 6) {
+      const inner  = m[1];
+      const title  = (/<title><!\[CDATA\[(.*?)\]\]><\/title>/.exec(inner) || /<title>(.*?)<\/title>/.exec(inner) || ['',''])[1].trim();
+      const link   = (/<link>(.*?)<\/link>/.exec(inner) || ['',''])[1].trim();
+      const pubDate= (/<pubDate>(.*?)<\/pubDate>/.exec(inner) || ['',''])[1].trim();
+      const source = (/<source[^>]*>(.*?)<\/source>/.exec(inner) || ['',''])[1].trim();
+      if (title && link) items.push({ title, link, pubDate, source });
+    }
+    return items;
+  }
 
-      container.innerHTML = data.items.map(item => {
-        const date   = new Date(item.pubDate).toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' });
-        const title  = item.title.replace(/<[^>]+>/g, '').replace(/ [-–] [^-–]+$/, '');
-        const source = item.source?.name || new URL(item.link).hostname.replace('www.','');
+  function renderLiveNews(container, items) {
+    container.innerHTML = `
+      <div class="news-section-label">📡 Dernières News — Bad Bunny / DBMF</div>
+      ${items.map(item => {
+        const dateObj = item.pubDate ? new Date(item.pubDate) : null;
+        const date    = dateObj && !isNaN(dateObj)
+          ? dateObj.toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' })
+          : '—';
+        const cleanTitle = item.title.replace(/ [-–] [^-–]{1,40}$/, '');
+        const src = item.source || (item.link ? new URL(item.link).hostname.replace('www.','') : 'News');
         return `
           <a class="news-card" href="${item.link}" target="_blank" rel="noopener noreferrer">
             <div class="news-date">📅 ${date}</div>
-            <div class="news-title">${title}</div>
-            <div class="news-source">🔗 ${source}</div>
+            <div class="news-title">${cleanTitle}</div>
+            <div class="news-source">🔗 ${src}</div>
           </a>`;
-      }).join('');
-    } catch {
-      container.innerHTML = `
-        <div class="news-empty">
-          📡 News indisponibles pour l'instant.<br>
-          Suis <strong>@badbunnypr</strong> sur Instagram pour les dernières updates!
-        </div>`;
-    }
-  })();
+      }).join('')}`;
+  }
+
+  async function loadNews() {
+    const container = document.getElementById('newsContainer');
+    const query = encodeURIComponent('Bad Bunny DBMF tour 2026');
+    const rssUrl = `https://news.google.com/rss/search?q=${query}&hl=fr&gl=FR&ceid=FR:fr`;
+
+    // ── Tier 1: rss2json ──────────────────────────────
+    try {
+      const res  = await Promise.race([
+        fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&count=6`),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 5000)),
+      ]);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.status === 'ok' && data.items?.length) {
+          renderLiveNews(container, data.items.map(i => ({
+            title: i.title, link: i.link, pubDate: i.pubDate, source: i.source?.name,
+          })));
+          return;
+        }
+      }
+    } catch { /* fall through */ }
+
+    // ── Tier 2: allorigins CORS proxy + manual XML parse ──
+    try {
+      const res  = await Promise.race([
+        fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 5000)),
+      ]);
+      if (res.ok) {
+        const json  = await res.json();
+        const items = parseRssItems(json.contents || '');
+        if (items.length) {
+          renderLiveNews(container, items);
+          return;
+        }
+      }
+    } catch { /* fall through */ }
+
+    // ── Tier 3: Curated static fallback (always works) ──
+    renderCuratedFallback(container);
+  }
 
   /* ====================================================
      GUIDE MODAL
@@ -1298,7 +1245,6 @@ cityColor: '#C8102E',</div>
     document.querySelector('.guide-body').scrollTop = 0;
   }
 
-  // Close on Escape key
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') closeGuide();
   });
