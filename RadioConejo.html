@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐸 RADIO CONEJO — DBMF MARSEILLE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ====================================================
+       RADIO CONEJO — DeBÍ TiRAR MáS FOToS · MARSEILLE 2025
+       ==================================================== */
+
+    :root {
+      --pink:        #FF006E;
+      --yellow:      #FFE500;
+      --purple:      #2D0057;
+      --deep:        #120020;
+      --green:       #39FF14;
+      --om-blue:     #009DDC;
+      --pr-red:      #C8102E;
+      --white:       #FFFFFF;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--deep);
+      color: var(--white);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grain texture */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9000;
+      opacity: 0.5;
+      mix-blend-mode: overlay;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Bebas Neue', cursive;
+      letter-spacing: 0.04em;
+    }
+
+    a { color: inherit; }
+
+    /* ====================================================
+       LOCK SCREEN
+       ==================================================== */
+
+    #lockScreen {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, #2d0057 0%, var(--deep) 70%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 8000;
+      padding: 2rem;
+      gap: 0;
+    }
+
+    #lockScreen.unlocking {
+      animation: lockBurst 0.9s ease-in forwards;
+    }
+
+    @keyframes lockBurst {
+      0%   { opacity: 1; transform: scale(1); }
+      25%  { background: var(--pink); transform: scale(1.02); }
+      55%  { background: var(--yellow); transform: scale(1.05); }
+      100% { opacity: 0; transform: scale(1.1); pointer-events: none; }
+    }
+
+    .lock-frog {
+      font-size: clamp(4rem, 15vw, 7rem);
+      line-height: 1;
+      animation: frogBounce 1.4s ease-in-out infinite;
+      margin-bottom: 0.5rem;
+      filter: drop-shadow(0 0 30px rgba(255,229,0,0.4));
+    }
+
+    @keyframes frogBounce {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50%       { transform: translateY(-16px) rotate(3deg); }
+    }
+
+    .lock-title {
+      font-size: clamp(3.5rem, 14vw, 7rem);
+      color: var(--yellow);
+      text-shadow:
+        4px  4px 0 var(--pink),
+        8px  8px 0 rgba(45,0,87,0.8);
+      line-height: 0.95;
+      text-align: center;
+    }
+
+    .lock-sub {
+      color: var(--pink);
+      font-size: clamp(0.7rem, 2.5vw, 1rem);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      text-align: center;
+      margin: 0.6rem 0 2rem;
+    }
+
+    .lock-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.9rem;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .lock-input {
+      width: 100%;
+      padding: 0.9rem 1.4rem;
+      background: rgba(255,255,255,0.07);
+      border: 2px solid var(--pink);
+      border-radius: 10px;
+      color: var(--white);
+      font-size: 1.3rem;
+      text-align: center;
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: 0.35em;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .lock-input::placeholder { letter-spacing: 0.1em; font-size: 0.95rem; }
+
+    .lock-input:focus {
+      border-color: var(--yellow);
+      box-shadow: 0 0 0 3px rgba(255,229,0,0.2), 0 0 24px rgba(255,229,0,0.15);
+    }
+
+    .lock-input.shake {
+      animation: inputShake 0.4s ease;
+      border-color: var(--pr-red) !important;
+    }
+
+    @keyframes inputShake {
+      0%,100% { transform: translateX(0); }
+      20%     { transform: translateX(-10px); }
+      40%     { transform: translateX(10px); }
+      60%     { transform: translateX(-6px); }
+      80%     { transform: translateX(6px); }
+    }
+
+    .lock-btn {
+      width: 100%;
+      padding: 0.9rem;
+      background: var(--pink);
+      border: none;
+      border-radius: 10px;
+      color: var(--white);
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.6rem;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(255,0,110,0.4);
+    }
+
+    .lock-btn:hover  { background: var(--yellow); color: var(--deep); box-shadow: 0 4px 24px rgba(255,229,0,0.5); }
+    .lock-btn:active { transform: scale(0.97); }
+
+    .lock-error {
+      min-height: 1.4rem;
+      color: var(--yellow);
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .lock-hint {
+      margin-top: 1.5rem;
+      color: rgba(255,255,255,0.25);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-align: center;
+    }
+
+    /* ====================================================
+       MAIN APP
+       ==================================================== */
+
+    #mainApp {
+      display: none;
+      animation: appReveal 0.7s 0.3s ease both;
+    }
+
+    #mainApp.visible { display: block; }
+
+    @keyframes appReveal {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ====================================================
+       FLAG STRIPS
+       ==================================================== */
+
+    .flag-pr {
+      display: flex;
+      height: 7px;
+    }
+    .flag-pr span { flex: 1; }
+    .flag-pr .r { background: var(--pr-red); }
+    .flag-pr .w { background: var(--white); }
+
+    .flag-om {
+      height: 5px;
+      background: linear-gradient(90deg, var(--om-blue) 50%, var(--white) 50%);
+    }
+
+    /* ====================================================
+       HEADER
+       ==================================================== */
+
+    .site-header {
+      background: linear-gradient(160deg, var(--purple) 0%, var(--deep) 100%);
+      border-bottom: 3px solid var(--pink);
+      padding: 1.8rem 1rem 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .site-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent 0,
+        transparent 18px,
+        rgba(255,0,110,0.06) 18px,
+        rgba(255,0,110,0.06) 36px
+      );
+    }
+
+    .header-frogs {
+      font-size: clamp(1.5rem, 5vw, 2.2rem);
+      letter-spacing: 0.3em;
+      margin-bottom: 0.2rem;
+      position: relative;
+    }
+
+    .header-title {
+      font-size: clamp(3rem, 12vw, 7rem);
+      color: var(--yellow);
+      text-shadow:
+        4px  4px 0 var(--pink),
+        8px  8px 0 rgba(45,0,87,0.9);
+      line-height: 0.95;
+      position: relative;
+    }
+
+    .header-tagline {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(0.65rem, 2.2vw, 0.85rem);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-top: 0.6rem;
+      position: relative;
+    }
+
+    /* ====================================================
+       LAYOUT SECTIONS
+       ==================================================== */
+
+    .section {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      color: var(--yellow);
+      text-shadow: 2px 2px 0 var(--pink);
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid rgba(255,0,110,0.4);
+      margin-bottom: 1.4rem;
+    }
+
+    .stripe-dark  { background: rgba(0,0,0,0.25); }
+    .stripe-purple { background: linear-gradient(180deg, rgba(45,0,87,0.35) 0%, transparent 100%); }
+
+    /* ====================================================
+       COUNTDOWN
+       ==================================================== */
+
+    .countdown-box {
+      background: linear-gradient(135deg, rgba(45,0,87,0.7) 0%, rgba(18,0,32,0.9) 100%);
+      border: 2px solid var(--pink);
+      border-radius: 18px;
+      padding: 2rem 1rem 1.6rem;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(255,0,110,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+
+    .cd-label {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+      letter-spacing: 0.3em;
+      color: var(--pink);
+      margin-bottom: 1.2rem;
+    }
+
+    .cd-grid {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 0.5rem;
+      flex-wrap: nowrap;
+    }
+
+    .cd-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .cd-num {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(2.8rem, 11vw, 6rem);
+      color: var(--yellow);
+      text-shadow:
+        3px 3px 0 var(--purple),
+        6px 6px 0 rgba(255,0,110,0.6);
+      line-height: 1;
+      min-width: 2ch;
+      text-align: center;
+      transition: color 0.3s;
+    }
+
+    .cd-sep {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(2.8rem, 11vw, 6rem);
+      color: var(--pink);
+      line-height: 1;
+      margin-top: 0;
+      opacity: 0.8;
+    }
+
+    .cd-lbl {
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+    }
+
+    .cd-hype {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(2.2rem, 9vw, 4.5rem);
+      line-height: 1.1;
+      animation: hypePulse 0.7s ease-in-out infinite alternate;
+    }
+
+    .cd-hype.tonight { color: var(--green); text-shadow: 0 0 30px rgba(57,255,20,0.5); }
+    .cd-hype.after   { color: var(--yellow); text-shadow: 0 0 30px rgba(255,229,0,0.5); }
+
+    @keyframes hypePulse {
+      from { transform: scale(1); }
+      to   { transform: scale(1.04); }
+    }
+
+    .cd-info {
+      margin-top: 1rem;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.1em;
+    }
+
+    /* ====================================================
+       RADIO PLAYER
+       ==================================================== */
+
+    .player-wrap {
+      background: rgba(255,0,110,0.07);
+      border: 2px solid rgba(255,0,110,0.4);
+      border-radius: 14px;
+      padding: 1.2rem;
+      box-shadow: 0 0 30px rgba(255,0,110,0.08);
+    }
+
+    .player-wrap iframe {
+      width: 100%;
+      border-radius: 8px;
+      display: block;
+    }
+
+    /* ====================================================
+       DAILY TRACK
+       ==================================================== */
+
+    .daily-card {
+      background: linear-gradient(135deg, rgba(57,255,20,0.07), rgba(255,0,110,0.07));
+      border: 2px solid rgba(57,255,20,0.5);
+      border-radius: 18px;
+      padding: 1.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .daily-badge {
+      display: inline-block;
+      background: var(--green);
+      color: var(--deep);
+      font-family: 'Bebas Neue', cursive;
+      font-size: 0.85rem;
+      letter-spacing: 0.18em;
+      padding: 0.25rem 0.9rem;
+      border-radius: 30px;
+      width: fit-content;
+    }
+
+    .daily-title {
+      font-size: clamp(2rem, 7vw, 3.5rem);
+      color: var(--yellow);
+      text-shadow: 2px 2px 0 var(--pink);
+      line-height: 1.05;
+      margin-top: 0.2rem;
+    }
+
+    .daily-album {
+      font-size: 0.82rem;
+      color: var(--green);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-top: 0.2rem;
+    }
+
+    .daily-note {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.6;
+      font-style: italic;
+      border-left: 3px solid var(--green);
+      padding-left: 0.9rem;
+    }
+
+    .daily-video {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border-radius: 10px;
+      overflow: hidden;
+      background: rgba(0,0,0,0.4);
+    }
+
+    .daily-video iframe { width: 100%; height: 100%; border: none; display: block; }
+
+    .placeholder-video {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.3);
+      border: 1px dashed rgba(255,0,110,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.35);
+      font-size: 0.8rem;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    /* ====================================================
+       VIDEO PANES
+       ==================================================== */
+
+    .grid-controls {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .grid-btn {
+      padding: 0.4rem 1rem;
+      border: 2px solid rgba(255,0,110,0.5);
+      background: transparent;
+      color: rgba(255,0,110,0.7);
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.05rem;
+      letter-spacing: 0.1em;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .grid-btn.active,
+    .grid-btn:hover {
+      background: var(--pink);
+      color: var(--white);
+      border-color: var(--pink);
+    }
+
+    .video-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .video-grid.g1 { grid-template-columns: 1fr; }
+    .video-grid.g2 { grid-template-columns: 1fr 1fr; }
+    .video-grid.g4 { grid-template-columns: 1fr 1fr; }
+
+    @media (min-width: 640px) {
+      .video-grid.g4 { grid-template-columns: 1fr 1fr; }
+    }
+
+    .video-pane {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,0,110,0.25);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .video-pane:hover { border-color: rgba(255,0,110,0.6); }
+
+    .vpane-label {
+      padding: 0.5rem 0.8rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--pink);
+      border-bottom: 1px solid rgba(255,0,110,0.15);
+    }
+
+    .video-pane iframe {
+      width: 100%;
+      aspect-ratio: 16/9;
+      display: block;
+      border: none;
+    }
+
+    /* ====================================================
+       NEWS
+       ==================================================== */
+
+    .news-grid { display: grid; gap: 0.9rem; }
+
+    .news-card {
+      display: block;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,229,0,0.15);
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+      text-decoration: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .news-card:hover {
+      border-color: rgba(255,229,0,0.5);
+      background: rgba(255,229,0,0.05);
+    }
+
+    .news-date   { font-size: 0.72rem; color: var(--pink); font-weight: 700; letter-spacing: 0.1em; margin-bottom: 0.3rem; }
+    .news-title  { font-size: 0.93rem; color: var(--white); line-height: 1.45; margin-bottom: 0.25rem; }
+    .news-source { font-size: 0.7rem; color: rgba(255,255,255,0.35); }
+
+    .news-empty {
+      text-align: center;
+      padding: 2rem;
+      color: rgba(255,255,255,0.35);
+      font-size: 0.9rem;
+      border: 1px dashed rgba(255,255,255,0.1);
+      border-radius: 12px;
+    }
+
+    /* ====================================================
+       CREW
+       ==================================================== */
+
+    .crew-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1rem;
+    }
+
+    .crew-card {
+      background: linear-gradient(160deg, rgba(45,0,87,0.7), rgba(255,0,110,0.1));
+      border: 2px solid rgba(255,0,110,0.3);
+      border-radius: 18px;
+      padding: 1.3rem 1rem;
+      text-align: center;
+      transition: transform 0.22s, border-color 0.22s, box-shadow 0.22s;
+      cursor: default;
+    }
+
+    .crew-card:hover {
+      transform: translateY(-5px) scale(1.02);
+      border-color: var(--yellow);
+      box-shadow: 0 8px 30px rgba(255,229,0,0.15);
+    }
+
+    .crew-card.organizer { border-color: var(--yellow); }
+    .crew-card.organizer:hover { border-color: var(--green); }
+
+    .crew-emoji    { font-size: 2.6rem; margin-bottom: 0.5rem; line-height: 1; }
+    .crew-name     { font-size: 1.25rem; color: var(--white); line-height: 1.2; }
+    .crew-nick     { font-size: 0.72rem; color: var(--pink); letter-spacing: 0.08em; margin: 0.3rem 0 0.7rem; }
+    .crew-badge    {
+      display: inline-block;
+      background: var(--green);
+      color: var(--deep);
+      font-family: 'Bebas Neue', cursive;
+      font-size: 0.72rem;
+      letter-spacing: 0.07em;
+      padding: 0.2rem 0.6rem;
+      border-radius: 30px;
+    }
+
+    .crew-card.organizer .crew-badge { background: var(--yellow); }
+
+    /* ====================================================
+       GUIDE BUTTON + PANEL
+       ==================================================== */
+
+    #guideBtn {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      width: 50px;
+      height: 50px;
+      background: var(--pink);
+      color: var(--white);
+      border: none;
+      border-radius: 50%;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      z-index: 700;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 24px rgba(255,0,110,0.5);
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    #guideBtn:hover { background: var(--yellow); color: var(--deep); transform: scale(1.1); }
+
+    #guidePanel {
+      position: fixed;
+      bottom: 5.5rem;
+      right: 1.5rem;
+      width: min(380px, calc(100vw - 3rem));
+      max-height: 72vh;
+      background: var(--purple);
+      border: 2px solid var(--pink);
+      border-radius: 18px;
+      padding: 1.6rem;
+      z-index: 700;
+      display: none;
+      overflow-y: auto;
+      box-shadow: 0 12px 50px rgba(0,0,0,0.6);
+    }
+
+    #guidePanel.open { display: block; }
+
+    #guidePanel h3 { color: var(--yellow); font-size: 1.8rem; margin-bottom: 0.5rem; }
+    #guidePanel h4 { color: var(--pink); font-size: 1.1rem; margin: 1.1rem 0 0.35rem; }
+    #guidePanel p, #guidePanel li { font-size: 0.83rem; color: rgba(255,255,255,0.8); line-height: 1.65; }
+    #guidePanel ul { padding-left: 1.2rem; }
+    #guidePanel li { margin-bottom: 0.3rem; }
+
+    #guidePanel code {
+      background: rgba(255,255,255,0.1);
+      color: var(--yellow);
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+    }
+
+    .guide-close {
+      margin-top: 1.2rem;
+      padding: 0.5rem 1.2rem;
+      background: var(--pink);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.1rem;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .guide-close:hover { background: var(--yellow); color: var(--deep); }
+
+    /* ====================================================
+       FOOTER
+       ==================================================== */
+
+    .site-footer {
+      text-align: center;
+      padding: 2rem 1rem 3rem;
+      color: rgba(255,255,255,0.25);
+      font-size: 0.78rem;
+      border-top: 1px solid rgba(255,0,110,0.15);
+      letter-spacing: 0.05em;
+    }
+
+    .site-footer a { color: var(--pink); text-decoration: none; }
+    .site-footer a:hover { color: var(--yellow); }
+
+    /* ====================================================
+       SCROLLBAR
+       ==================================================== */
+    ::-webkit-scrollbar       { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--deep); }
+    ::-webkit-scrollbar-thumb { background: var(--pink); border-radius: 3px; }
+
+    /* ====================================================
+       RESPONSIVE TWEAKS
+       ==================================================== */
+    @media (max-width: 400px) {
+      .cd-grid { gap: 0.25rem; }
+      .cd-sep  { font-size: 2.2rem; }
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- ====================================================
+     🔒 LOCK SCREEN
+     ==================================================== -->
+<div id="lockScreen">
+  <div class="lock-frog">🐸</div>
+  <div class="lock-title">RADIO<br>CONEJO</div>
+  <div class="lock-sub">🇵🇷 &nbsp; DeBÍ TiRAR MáS FOToS · MARSEILLE &nbsp; 🇫🇷</div>
+
+  <form class="lock-form" onsubmit="checkCode(event)">
+    <input
+      id="codeInput"
+      class="lock-input"
+      type="password"
+      placeholder="código secreto..."
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
+    >
+    <button class="lock-btn" type="submit">ENTRAR 🐸</button>
+    <div class="lock-error" id="lockError" aria-live="polite"></div>
+  </form>
+
+  <div class="lock-hint">sólo el crew sabe la palabra mágica 🤫</div>
+</div>
+
+<!-- ====================================================
+     🎵 MAIN APP
+     ==================================================== -->
+<div id="mainApp">
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-frogs">🐸 🐸 🐸</div>
+    <div class="header-title">RADIO CONEJO</div>
+    <div class="header-tagline">⚡ Bad Bunny · DeBÍ TiRAR MáS FOToS World Tour · Vélodrome · Marseille · 1 Juillet 2025 ⚡</div>
+  </header>
+  <!-- Puerto Rico flag strips -->
+  <div class="flag-pr"><span class="r"></span><span class="w"></span><span class="r"></span><span class="w"></span><span class="r"></span></div>
+  <!-- Olympique de Marseille strip -->
+  <div class="flag-om"></div>
+
+  <!-- ╔════════════════╗
+       ║   COUNTDOWN    ║
+       ╚════════════════╝ -->
+  <div class="section">
+    <div class="countdown-box">
+      <div class="cd-label">🏟️ &nbsp; Stade Vélodrome · Marseille · 1<sup>er</sup> Juillet 2025</div>
+      <div id="cdDisplay"></div>
+      <div class="cd-info">Bad Bunny — DeBÍ TiRAR MáS FOToS World Tour</div>
+    </div>
+  </div>
+
+  <!-- ╔════════════════╗
+       ║   RADIO 📻     ║
+       ╚════════════════╝ -->
+  <div class="section stripe-dark">
+    <div class="section-title">📻 LA RADIO</div>
+    <div class="player-wrap">
+      <iframe
+        height="166"
+        scrolling="no"
+        frameborder="no"
+        allow="autoplay"
+        src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/badbunnypr&color=%23FF006E&auto_play=false&hide_related=false&show_comments=false&show_user=true&show_reposts=false&show_teaser=true&visual=true">
+      </iframe>
+    </div>
+  </div>
+
+  <!-- ╔════════════════╗
+       ║  DAILY TRACK   ║
+       ╚════════════════╝ -->
+  <div class="section stripe-purple">
+    <div class="section-title">🎵 TRACK DU JOUR</div>
+    <div class="daily-card" id="dailyCard"><!-- JS fills --></div>
+  </div>
+
+  <!-- ╔════════════════╗
+       ║ VIDEO PANES 🎬 ║
+       ╚════════════════╝ -->
+  <div class="section stripe-dark">
+    <div class="section-title">🎬 LES VIDÉOS</div>
+    <div class="grid-controls">
+      <button class="grid-btn active" onclick="setGrid(1,this)">▪ 1</button>
+      <button class="grid-btn"        onclick="setGrid(2,this)">▪▪ 2</button>
+      <button class="grid-btn"        onclick="setGrid(4,this)">⊞ 4</button>
+    </div>
+    <div class="video-grid g1" id="videoGrid"><!-- JS fills --></div>
+  </div>
+
+  <!-- ╔════════════════╗
+       ║  TOUR NEWS 📰  ║
+       ╚════════════════╝ -->
+  <div class="section stripe-purple">
+    <div class="section-title">📰 NOTICIAS</div>
+    <div id="newsContainer" class="news-grid">
+      <div class="news-empty">🐸 Chargement des dernières news…</div>
+    </div>
+  </div>
+
+  <!-- ╔════════════════╗
+       ║   LE CREW 🐸   ║
+       ╚════════════════╝ -->
+  <div class="section stripe-dark">
+    <div class="section-title">🐸 LE CREW</div>
+    <div class="crew-grid" id="crewGrid"><!-- JS fills --></div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <p>🐸 RADIO CONEJO &nbsp;·&nbsp; DeBÍ TiRAR MáS FOToS WORLD TOUR &nbsp;·&nbsp; MARSEILLE 2025 &nbsp;🇵🇷</p>
+    <p style="margin-top:0.4rem">
+      Hecho con 💜 para el crew &nbsp;·&nbsp;
+      <a href="#" onclick="toggleGuide(event)">? GUIDE</a>
+    </p>
+  </footer>
+
+</div><!-- /mainApp -->
+
+<!-- GUIDE BUTTON -->
+<button id="guideBtn" onclick="toggleGuide()" aria-label="Open guide">?</button>
+
+<!-- GUIDE PANEL -->
+<div id="guidePanel" role="dialog" aria-label="Radio Conejo Guide">
+  <h3>🐸 GUIDE</h3>
+
+  <h4>🔐 Code d'accès</h4>
+  <p>Modifie <code>ACCESS_CODE</code> en haut du script. Par défaut: <code>conejo</code>. Stocké en sessionStorage.</p>
+
+  <h4>🗓️ Date du concert</h4>
+  <p>Modifie <code>CONCERT_DATE</code> si nécessaire. Format: <code>'YYYY-MM-DDTHH:MM:SS'</code></p>
+
+  <h4>🐸 Membres du crew</h4>
+  <p>Modifie le tableau <code>CREW</code>. Chaque entrée: <code>{ name, nickname, emoji, organizer? }</code>. Une ligne = un membre.</p>
+
+  <h4>🎵 Tracks du jour</h4>
+  <p>Modifie <code>DAILY_TRACKS</code>. Chaque entrée: <code>{ title, album, note, youtubeId }</code>. Tourne par jour de l'année.</p>
+
+  <h4>🎬 Panneaux vidéo</h4>
+  <p>Modifie <code>VIDEO_PANES</code>. Chaque entrée: <code>{ label, youtubeId }</code>. Les IDs marqués <code>_YT</code> sont des placeholders — remplace-les par de vrais IDs YouTube.</p>
+
+  <h4>📰 News automatiques</h4>
+  <p>Récupère le flux Google News RSS "Bad Bunny" via l'API rss2json (sans clé). Fonctionne offline avec un message de fallback.</p>
+
+  <h4>📻 Radio SoundCloud</h4>
+  <p>Pointe sur le profil officiel Bad Bunny. Pour changer: remplace l'URL dans le <code>src</code> de l'iframe player.</p>
+
+  <h4>🚀 Déploiement GitHub Pages</h4>
+  <ul>
+    <li>Push <code>RadioConejo.html</code> + <code>index.html</code> dans un repo public</li>
+    <li>Settings → Pages → Source: main / root</li>
+    <li>URL: <code>https://[ton-user].github.io/[repo]/</code></li>
+    <li>Partage le lien avec le crew!</li>
+  </ul>
+
+  <button class="guide-close" onclick="toggleGuide()">FERMER ✕</button>
+</div>
+
+<script>
+  /* ====================================================
+     ⚙️  CONFIGURATION — Modifie ici pour personnaliser
+     ==================================================== */
+
+  // 🔐 Code d'accès
+  const ACCESS_CODE = 'conejo';
+
+  // 🗓️ Date et heure du concert (heure locale Marseille)
+  const CONCERT_DATE = new Date('2025-07-01T21:00:00');
+
+  // ——————————————————————————————————————————————————
+  // 🐸 CREW — Ajoute/retire des membres ici
+  // { name, nickname, emoji, organizer? }
+  // ——————————————————————————————————————————————————
+  const CREW = [
+    { name: 'Norman',    nickname: 'El Organizador',    emoji: '🐰', organizer: true },
+    { name: 'Sofia',     nickname: 'La Visionaria',     emoji: '🌟' },
+    { name: 'Carlos',    nickname: 'El DJ del Crew',    emoji: '🎧' },
+    { name: 'Valentina', nickname: 'La Fotógrafa',      emoji: '📸' },
+    { name: 'Diego',     nickname: 'El Hype Man',       emoji: '🔥' },
+    { name: 'Isabela',   nickname: 'La Bailarina',      emoji: '💃' },
+  ];
+
+  // ——————————————————————————————————————————————————
+  // 🎵 DAILY TRACKS — Tourne par jour de l'année
+  // { title, album, note, youtubeId }
+  // IDs marqués _YT = placeholders à remplacer
+  // ——————————————————————————————————————————————————
+  const DAILY_TRACKS = [
+    {
+      title: 'Tití Me Preguntó',
+      album: 'Un Verano Sin Ti',
+      note: 'El himno del verano 2022. Imposible no perrear con esto. La tití tiene preguntas, nosotros tenemos respuestas.',
+      youtubeId: 'HQnC1UHBvWA',
+    },
+    {
+      title: 'Me Porto Bonito',
+      album: 'Un Verano Sin Ti ft. Chencho Corleone',
+      note: 'Dos voces, un banga. Chencho on the remix — dúo imbatible del reggaeton moderno.',
+      youtubeId: 'fsRbfTpL9_o',
+    },
+    {
+      title: 'Efecto',
+      album: 'Un Verano Sin Ti',
+      note: 'El track más sensual del álbum. Un efecto que no se puede ignorar. Punto final.',
+      youtubeId: 'GRoZKIuELW4',
+    },
+    {
+      title: 'Moscow Mule',
+      album: 'Un Verano Sin Ti',
+      note: 'Siete minutos de puro flow sin parar. Una obra maestra caribeña. La duración perfecta.',
+      youtubeId: 'JRrK2j9ulNE',
+    },
+    {
+      title: 'Ojitos Lindos',
+      album: 'Un Verano Sin Ti ft. Bomba Estéreo',
+      note: 'Cumbia psicodélica boricua. La colaboración más bonita e inesperada. Perfecto.',
+      youtubeId: 'p9akAFoVRJs',
+    },
+    {
+      title: 'Neverita',
+      album: 'Un Verano Sin Ti',
+      note: 'Chill vibras pero el flow no para. La botellita fría del verano eterno.',
+      youtubeId: 'EuKvI9A1x3w',
+    },
+    {
+      title: 'Después de la Playa',
+      album: 'Un Verano Sin Ti',
+      note: 'El cierre de playa perfecto. Arena, sol, y Bad Bunny. 100% nostalgia caribeña.',
+      youtubeId: 'sO_zGYYdGLs',
+    },
+    {
+      title: 'Me Fui de Vacaciones',
+      album: 'Un Verano Sin Ti',
+      note: 'Pura aventura caribeña. Flow supremo. Nosotros también nos fuimos — a Marseille.',
+      youtubeId: 'O2TTOQ9AAGI',
+    },
+    {
+      title: 'Party ft. Rauw Alejandro',
+      album: 'Un Verano Sin Ti',
+      note: 'Dos titanes en un mismo track. Una banga que no envejece.',
+      youtubeId: 'O3pPP7Ow3f4',
+    },
+    {
+      title: 'La Corriente ft. Tony Dize',
+      album: 'Un Verano Sin Ti',
+      note: 'Old school reggaeton vibes con Tony Dize. Pura clase y nostalgia del género.',
+      youtubeId: 'CQ5VzFJ2Xw4',
+    },
+    {
+      title: 'Yonaguni',
+      album: 'El Último Tour del Mundo',
+      note: 'Dedicado a alguien en Japón. Emotivo, único, y un flow que no tiene rival.',
+      youtubeId: 'rPFp6r8G3a8',
+    },
+    {
+      title: 'DÁKITI ft. Jhay Cortez',
+      album: 'El Último Tour del Mundo',
+      note: 'El collab que nadie esperaba y todos necesitaban. DÁKITI redefinió el perreo fino.',
+      youtubeId: 'GZEbxgLGAuc',
+    },
+    {
+      title: 'Callaíta',
+      album: 'Single',
+      note: 'El track que cambió todo. Simpleza perfecta. El momento en que BB se volvió leyenda.',
+      youtubeId: 'EPm4LYBEoN4',
+    },
+    {
+      title: 'MIA ft. Drake',
+      album: 'X 100PRE',
+      note: 'Bad Bunny x Drake. Histórico. El día que el mundo entero volteó a mirar a Puerto Rico.',
+      youtubeId: 'UivqAFMHCZs',
+    },
+    {
+      title: 'AMORFODA',
+      album: 'X 100PRE',
+      note: 'Desamor en modo trap. Clásico instantáneo. La vulnerabilidad de BB al descubierto.',
+      youtubeId: 'qr_JiHqjx8w',
+    },
+    {
+      title: 'Si Veo a Tu Mamá',
+      album: 'YHLQMDLG',
+      note: 'Smooth como la seda. Flow sin esfuerzo. El Bad Bunny más chill y más letal a la vez.',
+      youtubeId: 'zcUMr9YGZLY',
+    },
+    {
+      title: 'YO PERREO SOLA',
+      album: 'YHLQMDLG',
+      note: 'Himno feminista de perreo. Iconico. BB de mujer, rompiendo todo.',
+      youtubeId: 'GXSoKzFUVZQ',
+    },
+    {
+      title: 'VETE',
+      album: 'YHLQMDLG',
+      note: 'El desamor más bailable de 2020. Tú te vas pero el track se queda.',
+      youtubeId: 'p1gJEr_g3ks',
+    },
+    {
+      title: 'ESTÁ CABRÓN SER YO',
+      album: 'YHLQMDLG',
+      note: 'Confianza al máximo nivel. Bienvenidos al mundo de BB. La actitud en 3 minutos.',
+      youtubeId: 'L0bQpOEVWv8',
+    },
+    {
+      title: 'El Apagón',
+      album: 'Un Verano Sin Ti',
+      note: 'Himno político de Puerto Rico. Necesario, poderoso, y musicalmente perfecto.',
+      youtubeId: 'NNLnDNNkiGo',
+    },
+    {
+      title: 'WHERE SHE GOES',
+      album: 'DeBÍ TiRAR MáS FOToS',
+      note: 'El track que conquistó el mundo entero. La era DBMF en su máximo esplendor.',
+      youtubeId: 'Xk0hXXBmkXU',
+    },
+    {
+      title: 'MONACO',
+      album: 'nadie sabe lo que va a pasar mañana',
+      note: 'Flow oscuro y luxe. Bad Bunny en modo F1. La calle meets los millones.',
+      youtubeId: 'Bs_7B6YQWIY',
+    },
+    {
+      title: 'Lo Que Le Pasó a Hawaii',
+      album: 'DeBÍ TiRAR MáS FOToS',
+      note: 'Del álbum del tour que estamos viviendo. Emoción pura, letra que golpea.',
+      youtubeId: 'lo_hawaii_YT',
+    },
+    {
+      title: 'baticano',
+      album: 'nadie sabe lo que va a pasar mañana',
+      note: 'Trap introspectivo. El Bunny más vulnerable y real. Favela meets Vatican.',
+      youtubeId: 'baticano_YT',
+    },
+    {
+      title: 'Andrea ft. Buscabulla',
+      album: 'Un Verano Sin Ti',
+      note: 'El track más artsy del álbum. Experimental, bello, y completamente único.',
+      youtubeId: 'andrea_YT',
+    },
+    {
+      title: 'Un Ratito',
+      album: 'Un Verano Sin Ti',
+      note: 'Ligereza y vibes de verano infinito. Solo un ratito más en este paraíso musical.',
+      youtubeId: 'unratito_YT',
+    },
+    {
+      title: 'Dos Mil 16',
+      album: 'Un Verano Sin Ti',
+      note: 'Nostalgia de los inicios. Cuando todo era más simple. Emotivo a otro nivel.',
+      youtubeId: 'dosmil16_YT',
+    },
+    {
+      title: 'Soltera ft. Lunay',
+      album: 'OASIS',
+      note: 'Collab con Lunay. Energía caribeña total. El verano en forma de canción.',
+      youtubeId: 'soltera_YT',
+    },
+    {
+      title: 'HIBIKI',
+      album: 'nadie sabe lo que va a pasar mañana',
+      note: 'Alcance global. BB x Japan energy. El reggaeton sin fronteras.',
+      youtubeId: 'hibiki_YT',
+    },
+    {
+      title: 'La Canción ft. J Balvin',
+      album: 'Oasis',
+      note: 'Dos leyendas del urbano. La canción más triste que quieres escuchar en loop.',
+      youtubeId: 'lacancion_YT',
+    },
+  ];
+
+  // ——————————————————————————————————————————————————
+  // 🎬 VIDEO PANES — Remplace les IDs YouTube
+  // { label, youtubeId }
+  // IDs marqués _YT = placeholders
+  // ——————————————————————————————————————————————————
+  const VIDEO_PANES = [
+    { label: '🐸 WHERE SHE GOES — Vidéo Officielle',       youtubeId: 'Xk0hXXBmkXU' },
+    { label: '🇵🇷 El Apagón — Vidéo Officielle',           youtubeId: 'NNLnDNNkiGo' },
+    { label: '💜 DÁKITI — Vidéo Officielle',                youtubeId: 'GZEbxgLGAuc' },
+    { label: '🏟️ DBMF Tour — Live Highlights',             youtubeId: 'dbmf_live_YT' },
+    { label: '🎵 Tití Me Preguntó — Vidéo Officielle',     youtubeId: 'HQnC1UHBvWA' },
+    { label: '🔥 YO PERREO SOLA — Vidéo Officielle',       youtubeId: 'GXSoKzFUVZQ' },
+  ];
+
+  /* ====================================================
+     LOCK SCREEN
+     ==================================================== */
+
+  const REJECTIONS = [
+    '❌ Eso no es, papi 🐸',
+    '🚫 Tu no eres del crew, amigo',
+    '🐸 El conejo no te deja pasar',
+    '⛔ Contraseña incorrecta, mi amor',
+    '🔒 Sigue intentando… buena suerte',
+    '🤨 Casi… pero no. Intenta otra vez',
+  ];
+
+  function checkCode(e) {
+    e.preventDefault();
+    const input = document.getElementById('codeInput');
+    const val = input.value.trim().toLowerCase();
+
+    if (val === ACCESS_CODE.toLowerCase()) {
+      sessionStorage.setItem('rc_ok', '1');
+      document.getElementById('lockScreen').classList.add('unlocking');
+      setTimeout(showApp, 850);
+    } else {
+      const err = document.getElementById('lockError');
+      input.classList.remove('shake');
+      void input.offsetWidth;
+      input.classList.add('shake');
+      err.textContent = REJECTIONS[Math.floor(Math.random() * REJECTIONS.length)];
+      input.value = '';
+      setTimeout(() => input.classList.remove('shake'), 420);
+    }
+  }
+
+  function showApp() {
+    document.getElementById('lockScreen').style.display = 'none';
+    const app = document.getElementById('mainApp');
+    app.classList.add('visible');
+    const btn = document.getElementById('guideBtn');
+    btn.style.display = 'flex';
+  }
+
+  // Skip lock if already unlocked this session
+  if (sessionStorage.getItem('rc_ok') === '1') {
+    document.getElementById('lockScreen').style.display = 'none';
+    const app = document.getElementById('mainApp');
+    app.classList.add('visible');
+    app.style.animation = 'none';
+    app.style.opacity = '1';
+    const btn = document.getElementById('guideBtn');
+    btn.style.display = 'flex';
+  }
+
+  /* ====================================================
+     COUNTDOWN
+     ==================================================== */
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function renderCountdown() {
+    const now  = new Date();
+    const diff = CONCERT_DATE - now;
+    const el   = document.getElementById('cdDisplay');
+
+    const sameDay = now.getFullYear() === CONCERT_DATE.getFullYear()
+                 && now.getMonth()    === CONCERT_DATE.getMonth()
+                 && now.getDate()     === CONCERT_DATE.getDate();
+
+    if (diff > 0 && !sameDay) {
+      // Future
+      const days  = Math.floor(diff / 86400000);
+      const hrs   = Math.floor((diff % 86400000)  / 3600000);
+      const mins  = Math.floor((diff % 3600000)   / 60000);
+      const secs  = Math.floor((diff % 60000)     / 1000);
+
+      el.innerHTML = `
+        <div class="cd-grid">
+          <div class="cd-unit"><div class="cd-num">${pad(days)}</div><div class="cd-lbl">jours</div></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-unit"><div class="cd-num">${pad(hrs)}</div><div class="cd-lbl">heures</div></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-unit"><div class="cd-num">${pad(mins)}</div><div class="cd-lbl">minutes</div></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-unit"><div class="cd-num">${pad(secs)}</div><div class="cd-lbl">secondes</div></div>
+        </div>`;
+    } else if (sameDay) {
+      el.innerHTML = `
+        <div class="cd-hype tonight">C'EST CE SOIR 🐸🔥</div>
+        <div style="color:var(--green);font-size:1.1rem;margin-top:0.6rem;letter-spacing:0.1em">MARSEILLE NOUS ATTEND !!!</div>`;
+    } else {
+      el.innerHTML = `
+        <div class="cd-hype after">ON Y ÉTAIT 🐸💜</div>
+        <div style="color:var(--yellow);font-size:0.95rem;margin-top:0.6rem;letter-spacing:0.1em">
+          1ER JUILLET 2025 · VÉLODROME · INOUBLIABLE
+        </div>`;
+    }
+  }
+
+  renderCountdown();
+  setInterval(renderCountdown, 1000);
+
+  /* ====================================================
+     DAILY TRACK
+     ==================================================== */
+
+  (function renderDailyTrack() {
+    const now      = new Date();
+    const start    = new Date(now.getFullYear(), 0, 0);
+    const dayIndex = Math.floor((now - start) / 86400000);
+    const track    = DAILY_TRACKS[dayIndex % DAILY_TRACKS.length];
+    const isHolder = track.youtubeId.endsWith('_YT');
+
+    const videoHTML = isHolder
+      ? `<div class="placeholder-video">🎬 Remplace <code>${track.youtubeId}</code> dans DAILY_TRACKS par un vrai ID YouTube</div>`
+      : `<div class="daily-video"><iframe src="https://www.youtube.com/embed/${track.youtubeId}?rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+
+    document.getElementById('dailyCard').innerHTML = `
+      <div>
+        <span class="daily-badge">🎵 TRACK DU JOUR</span>
+        <div class="daily-title">${track.title}</div>
+        <div class="daily-album">${track.album}</div>
+      </div>
+      <div class="daily-note">"${track.note}"</div>
+      ${videoHTML}
+    `;
+  })();
+
+  /* ====================================================
+     VIDEO PANES
+     ==================================================== */
+
+  function renderVideos(cols) {
+    const grid  = document.getElementById('videoGrid');
+    grid.className = `video-grid g${cols}`;
+
+    const count = Math.min(cols === 1 ? 1 : cols === 2 ? 2 : 4, VIDEO_PANES.length);
+
+    grid.innerHTML = VIDEO_PANES.slice(0, count).map(v => {
+      const isHolder = v.youtubeId.endsWith('_YT');
+      const body = isHolder
+        ? `<div style="aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);color:rgba(255,255,255,0.35);font-size:0.78rem;padding:1rem;text-align:center">🎬 Remplace <code>${v.youtubeId}</code> par un vrai ID YouTube</div>`
+        : `<iframe src="https://www.youtube.com/embed/${v.youtubeId}?rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+      return `<div class="video-pane"><div class="vpane-label">${v.label}</div>${body}</div>`;
+    }).join('');
+  }
+
+  function setGrid(cols, btn) {
+    document.querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderVideos(cols);
+  }
+
+  renderVideos(1);
+
+  /* ====================================================
+     CREW
+     ==================================================== */
+
+  (function renderCrew() {
+    document.getElementById('crewGrid').innerHTML = CREW.map(m => `
+      <div class="crew-card${m.organizer ? ' organizer' : ''}">
+        <div class="crew-emoji">${m.emoji}</div>
+        <div class="crew-name">${m.name}</div>
+        <div class="crew-nick">${m.nickname}</div>
+        <span class="crew-badge">${m.organizer ? '👑 ORGANIZADOR' : "I'M GOING 🐸"}</span>
+      </div>
+    `).join('');
+  })();
+
+  /* ====================================================
+     NEWS FEED
+     ==================================================== */
+
+  (async function loadNews() {
+    const container = document.getElementById('newsContainer');
+    try {
+      const rss = encodeURIComponent('https://news.google.com/rss/search?q=Bad+Bunny+DBMF+tour&hl=fr&gl=FR&ceid=FR:fr');
+      const res  = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rss}&count=6`);
+      const data = await res.json();
+
+      if (data.status !== 'ok' || !data.items?.length) throw new Error('empty');
+
+      container.innerHTML = data.items.map(item => {
+        const date    = new Date(item.pubDate).toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' });
+        const title   = item.title.replace(/<[^>]+>/g, '').replace(/ [-–] [^-–]+$/, '');
+        const source  = item.source?.name || new URL(item.link).hostname.replace('www.','');
+        return `
+          <a class="news-card" href="${item.link}" target="_blank" rel="noopener noreferrer">
+            <div class="news-date">📅 ${date}</div>
+            <div class="news-title">${title}</div>
+            <div class="news-source">🔗 ${source}</div>
+          </a>`;
+      }).join('');
+
+    } catch {
+      container.innerHTML = `
+        <div class="news-empty">
+          📡 News indisponibles hors ligne.<br>
+          Suis <strong>@badbunnypr</strong> sur Instagram pour les dernières updates Bad Bunny!
+        </div>`;
+    }
+  })();
+
+  /* ====================================================
+     GUIDE PANEL
+     ==================================================== */
+
+  function toggleGuide(e) {
+    if (e) e.preventDefault();
+    document.getElementById('guidePanel').classList.toggle('open');
+  }
+
+</script>
+</body>
+</html>
