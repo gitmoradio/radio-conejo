@@ -1,0 +1,2033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GITMO RADIO // TACTICAL OPS CONSOLE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css">
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.23.10/babel.min.js"></script>
+<style>
+  :root {
+    --g:  #00ff41;
+    --g2: #39ff6e;
+    --g3: #0d4a1a;
+    --g4: #1a3a1a;
+    --gd: #0a1f0a;
+    --amb: #ffb000;
+    --ambd: #7a5500;
+    --red: #ff3300;
+    --bg: #030804;
+    --b1: #001433;
+    --b2: #0044aa;
+    --bc: #00bfff;
+    --font: 'Share Tech Mono', 'VT323', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    background: var(--bg);
+    color: var(--g);
+    font-family: var(--font);
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  /* ── CRT EFFECTS ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px);
+    pointer-events: none; z-index: 9999;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse 100% 100% at 50% 50%, transparent 55%, rgba(0,0,0,0.65) 100%);
+    pointer-events: none; z-index: 9998;
+  }
+
+  @keyframes flicker  { 0%,96%,100%{opacity:1} 97%{opacity:.94} 98%{opacity:1} 99%{opacity:.96} }
+  @keyframes blink    { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+  @keyframes pulse-glow { 0%,100%{text-shadow:0 0 6px var(--g)} 50%{text-shadow:0 0 14px var(--g2),0 0 28px var(--g)} }
+  @keyframes incident-flash { 0%,100%{background:#1a0c00} 15%,55%{background:#ffcc00;color:#000} 30%,70%{background:#ff8800;color:#000} 45%,85%{background:#ffcc00;color:#000} }
+  @keyframes config-slide { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes sl-flicker { 0%,100%{opacity:1} 20%{opacity:.25} 40%{opacity:.8} 60%{opacity:.15} 80%{opacity:.9} }
+  @keyframes sl-bar-anim { 0%,100%{height:15%} 50%{height:85%} }
+
+  .app { display:flex; flex-direction:column; height:100vh; animation:flicker 12s infinite; }
+  .blink { animation:blink 1s step-end infinite; }
+
+  /* ── HEADER ── */
+  .header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:4px 10px; background:#000;
+    border-bottom:2px solid var(--g3); flex-shrink:0; min-height:36px;
+  }
+  .header-logo { font-family:'VT323',monospace; font-size:22px; color:var(--amb); letter-spacing:3px; text-shadow:0 0 10px var(--amb),0 0 20px var(--ambd); }
+  .header-logo span { color:var(--g); }
+  .header-mid { font-size:10px; color:var(--g3); text-align:center; letter-spacing:1px; line-height:1.7; }
+  .header-clock { font-size:11px; color:var(--g2); letter-spacing:1px; text-shadow:0 0 6px var(--g); text-align:right; }
+
+  /* ── INCIDENT BAR ── */
+  .incident-bar {
+    display:flex; align-items:center; gap:10px; padding:0 12px;
+    background:#1a0c00; border-bottom:2px solid #5a3800; border-top:1px solid #5a3800;
+    flex-shrink:0; height:32px; font-size:12px; letter-spacing:1px;
+  }
+  .incident-bar.flashing { animation:incident-flash 0.9s ease; }
+  .incident-warn { font-size:16px; color:var(--amb); }
+  .incident-label { color:#cc8800; flex:1; font-size:10px; letter-spacing:2px; }
+  .incident-count { font-family:'VT323',monospace; font-size:28px; color:#ffcc00; text-shadow:0 0 12px var(--amb); line-height:1; min-width:3ch; text-align:right; }
+  .incident-reset { background:none; border:1px solid #5a3800; color:#cc8800; font-family:var(--font); font-size:10px; padding:1px 8px; cursor:pointer; letter-spacing:2px; transition:all .12s; }
+  .incident-reset:hover { background:#3a2000; border-color:var(--amb); color:var(--amb); }
+
+  /* ── DASHBOARD BAR ── */
+  .dash-bar {
+    display:flex; align-items:center; gap:3px; flex-shrink:0;
+    padding:3px 8px; background:#000d22; border-bottom:1px solid #002266;
+  }
+  .dash-bar-label { font-size:9px; color:#004400; letter-spacing:2px; margin-right:4px; }
+  .dash-layout-btn {
+    background:none; border:1px solid #002266; color:#005599;
+    font-family:var(--font); font-size:9px; padding:2px 6px;
+    cursor:pointer; letter-spacing:1px; transition:all .1s;
+  }
+  .dash-layout-btn:hover { background:#002266; color:var(--bc); }
+  .dash-layout-btn.active { border-color:var(--g3); color:var(--g); }
+
+  /* ── PANEL EXPAND / FULLSCREEN ── */
+  .panel-expand-btn {
+    background:none; border:none; color:#004488; font-family:var(--font);
+    font-size:12px; cursor:pointer; padding:0 3px; line-height:1;
+    transition:color .1s; flex-shrink:0;
+  }
+  .panel-expand-btn:hover { color:var(--bc); }
+  .panel-fullscreen {
+    position:fixed !important; inset:0 !important;
+    z-index:998 !important; overflow:hidden !important;
+    border:none !important; border-radius:0 !important; margin:0 !important;
+    display:flex !important; flex-direction:column !important;
+  }
+  .panel-fullscreen .panel-expand-btn { color:var(--amb); }
+
+  /* ── MAIN GRID ── */
+  .main-grid {
+    display:grid;
+    grid-template-columns:var(--dash-cols, 252px 1fr 286px);
+    gap:3px; padding:3px;
+    flex:1; overflow:hidden; min-height:0;
+  }
+  .left-col,.center-col,.right-col { display:flex; flex-direction:column; gap:3px; min-height:0; overflow:hidden; }
+
+  /* ── PANELS ── */
+  .panel {
+    background:var(--gd); border:1px solid var(--g4);
+    display:flex; flex-direction:column; min-height:0; overflow:hidden; position:relative;
+  }
+  .panel::before {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(180deg,rgba(0,255,65,.03) 0%,transparent 100%);
+    pointer-events:none;
+  }
+  .panel-hdr {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:3px 8px; background:var(--g3); border-bottom:1px solid var(--g4);
+    font-size:11px; letter-spacing:1px; flex-shrink:0; color:var(--g2);
+  }
+  .panel-hdr-amber { background:#2a1800; border-bottom-color:var(--ambd); color:var(--amb); }
+  .panel-body { flex:1; padding:6px 8px; overflow-y:auto; min-height:0; }
+
+  ::-webkit-scrollbar { width:4px; }
+  ::-webkit-scrollbar-track { background:var(--bg); }
+  ::-webkit-scrollbar-thumb { background:var(--g3); }
+
+  /* ── SECTOR SELECTOR ── */
+  .sector-selector { background:var(--b1); border:1px solid var(--b2); flex-shrink:0; }
+  .sector-hdr { background:var(--b2); color:#fff; padding:2px 8px; font-size:11px; letter-spacing:2px; display:flex; justify-content:space-between; }
+  .sector-search-row { display:flex; gap:2px; padding:3px 5px; background:#000d22; border-bottom:1px solid #002266; }
+  .sector-search-input {
+    flex:1; background:#000; border:1px solid #002266; color:var(--bc);
+    font-family:var(--font); font-size:10px; padding:2px 4px; outline:none; min-width:0;
+  }
+  .sector-search-input:focus { border-color:var(--bc); }
+  .sector-search-input::placeholder { color:#002244; }
+  .btn-sector-act {
+    background:none; border:1px solid #002266; color:var(--bc); font-family:var(--font);
+    font-size:11px; padding:1px 6px; cursor:pointer; transition:all .1s; flex-shrink:0;
+  }
+  .btn-sector-act:hover { background:#002266; }
+  .sector-results { background:#000d22; border-bottom:1px solid #002266; max-height:130px; overflow-y:auto; }
+  .sector-result-item { padding:3px 8px; cursor:pointer; font-size:10px; border-bottom:1px solid #001a44; color:var(--bc); }
+  .sector-result-item:hover { background:#001a44; }
+  .sector-list { display:flex; flex-direction:column; max-height:178px; overflow-y:auto; scrollbar-width:thin; }
+  .sector-item { display:flex; flex-direction:column; padding:3px 8px; cursor:pointer; border-bottom:1px solid #001a44; color:var(--bc); transition:background .1s; }
+  .sector-item:hover { background:#002266; }
+  .sector-item.active { background:var(--b2); color:#fff; }
+  .sector-item.active .sector-id { color:var(--amb); }
+  .sector-id { font-size:9px; letter-spacing:1px; color:#0077cc; }
+  .sector-name { font-size:11px; letter-spacing:1px; }
+  .sector-desc { font-size:9px; color:#005588; }
+  .sector-item.active .sector-desc { color:#88ccff; }
+  .sector-coords { padding:4px 8px; font-size:10px; color:var(--bc); background:#000d22; border-top:1px solid var(--b2); line-height:1.6; }
+
+  /* ── GENRE STRIP ── */
+  .genre-strip {
+    display:flex; gap:2px; overflow-x:auto; flex-shrink:0;
+    padding:4px 0 3px; margin-bottom:4px; border-bottom:1px solid var(--g3);
+    scrollbar-width:none;
+  }
+  .genre-strip::-webkit-scrollbar { display:none; }
+  .genre-pill {
+    background:none; border:1px solid #1a3a1a; color:#1a5a1a; font-family:var(--font);
+    font-size:9px; padding:1px 6px; cursor:pointer; white-space:nowrap; letter-spacing:1px;
+    transition:all .1s; flex-shrink:0;
+  }
+  .genre-pill:hover { background:var(--g3); color:var(--g); border-color:var(--g3); }
+  .genre-pill.active { background:var(--ambd); border-color:var(--amb); color:var(--amb); }
+
+  /* ── COMMS TAB STRIP ── */
+  .comms-tab-strip { display:flex; flex-shrink:0; border-bottom:1px solid var(--ambd); background:#110800; }
+  .comms-tab {
+    flex:1; padding:3px 4px; background:none; border:none; border-right:1px solid #2a1400;
+    color:#6a3800; font-family:var(--font); font-size:10px; cursor:pointer; letter-spacing:1px; transition:all .1s;
+  }
+  .comms-tab:last-child { border-right:none; }
+  .comms-tab:hover { background:#1a0e00; color:var(--amb); }
+  .comms-tab.active { background:#1a0e00; color:var(--amb); border-bottom:2px solid var(--amb); }
+
+  /* ── RADIO / STATION LIST ── */
+  .radio-panel { flex:1; min-height:0; }
+  .station-list { font-size:10px; max-height:100px; overflow-y:auto; margin-bottom:4px; color:var(--g); line-height:1.7; }
+  .station-item { cursor:pointer; padding:0 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-bottom:1px solid var(--g3); }
+  .station-item:hover { color:var(--g2); background:var(--g3); }
+  .station-item.active { color:var(--amb); }
+  .station-item::before { content:'▸ '; }
+  .station-item.active::before { content:'◉ '; color:var(--amb); }
+  .radio-now {
+    font-size:10px; color:var(--amb); white-space:nowrap; overflow:hidden;
+    text-overflow:ellipsis; margin-bottom:4px; text-shadow:0 0 8px var(--ambd);
+    animation:pulse-glow 3s ease infinite; min-height:13px;
+  }
+  .radio-controls { display:flex; align-items:center; gap:6px; margin-bottom:5px; }
+  .btn-play {
+    background:none; border:1px solid var(--g4); color:var(--g);
+    font-family:var(--font); font-size:16px; width:28px; height:28px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; flex-shrink:0;
+  }
+  .btn-play:hover { background:var(--g3); border-color:var(--g); }
+  .btn-play.playing { color:var(--amb); border-color:var(--amb); }
+  .volume-row { display:flex; align-items:center; gap:5px; font-size:10px; color:var(--g3); flex:1; }
+  input[type=range] { -webkit-appearance:none; flex:1; height:3px; background:var(--g3); outline:none; cursor:pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:9px; height:9px; background:var(--g); border-radius:0; box-shadow:0 0 4px var(--g); }
+
+  /* ── SOUNDCLOUD WIDGET ── */
+  .sc-widget-wrap { flex:1; min-height:0; overflow:hidden; border:1px solid var(--g3); }
+  .sc-widget-wrap iframe { width:100%; height:100%; border:none; display:block; }
+  .sc-url-form { padding:4px 0; }
+
+  /* ── VU METER ── */
+  .vu-wrap { display:flex; align-items:flex-end; gap:2px; height:32px; padding:3px 0; border-top:1px solid var(--g3); }
+  .vu-bar { flex:1; min-width:0; transition:height .07s ease-out,background .07s; }
+
+  /* ── SYS.CONFIG PANEL ── */
+  .config-body { flex:1; overflow-y:auto; padding:6px 8px; animation:config-slide .2s ease; }
+  .config-sub-hdr { font-size:10px; color:var(--bc); letter-spacing:1px; margin-bottom:5px; }
+  .config-mode-tabs { display:flex; gap:2px; margin-bottom:6px; flex-wrap:wrap; }
+  .config-mode-btn {
+    flex:1; padding:2px 3px; background:none; border:1px solid var(--g3);
+    color:var(--g3); font-family:var(--font); font-size:9px; cursor:pointer; letter-spacing:1px; transition:all .1s; min-width:40px;
+  }
+  .config-mode-btn:hover { background:var(--g3); color:var(--g); }
+  .config-mode-btn.active { background:var(--g3); color:var(--g); border-color:var(--g); }
+  .config-input {
+    width:100%; background:#000; border:1px solid var(--g3); color:var(--g);
+    font-family:var(--font); font-size:11px; padding:3px 6px; outline:none; margin-top:3px;
+  }
+  .config-input::placeholder { color:#1a4a1a; }
+  .config-input:focus { border-color:var(--g); }
+  .config-file-label {
+    display:block; padding:4px 8px; background:var(--g3); border:1px solid var(--g);
+    color:var(--g); font-family:var(--font); font-size:10px; cursor:pointer;
+    text-align:center; margin-top:5px; letter-spacing:1px; transition:all .1s;
+  }
+  .config-file-label:hover { background:#1a5a1a; color:var(--g2); }
+  input[type=file] { display:none; }
+  .config-divider { border:none; border-top:1px dashed #1a3a1a; margin:7px 0; }
+  .config-info { font-size:9px; color:var(--g3); line-height:1.8; margin-top:3px; }
+  .config-active-val { font-size:9px; color:var(--g3); margin-top:2px; word-break:break-all; }
+  .btn-config {
+    background:none; border:1px solid var(--g3); color:var(--g3); font-family:var(--font);
+    font-size:10px; padding:2px 8px; cursor:pointer; letter-spacing:1px; transition:all .1s; margin-top:3px;
+  }
+  .btn-config:hover { background:var(--g3); color:var(--g); border-color:var(--g); }
+  .btn-config.danger { border-color:#3a1000; color:#6a2000; }
+  .btn-config.danger:hover { background:#3a1000; color:var(--red); border-color:var(--red); }
+  .btn-config-row { display:flex; gap:3px; }
+  .btn-config-row .btn-config { flex:1; text-align:center; }
+
+  /* ── WEATHER PANEL ── */
+  .wx-temp { font-family:'VT323',monospace; font-size:54px; color:var(--g2); line-height:1; text-shadow:0 0 15px var(--g); letter-spacing:-2px; }
+  .wx-feels { font-size:10px; color:var(--g3); margin-bottom:3px; }
+  .wx-cond { font-size:12px; color:var(--amb); letter-spacing:2px; margin-bottom:4px; }
+  .wx-stats { display:grid; grid-template-columns:1fr 1fr; gap:2px 8px; font-size:10px; margin-bottom:6px; border-top:1px solid var(--g3); padding-top:5px; }
+  .wx-stat { display:flex; justify-content:space-between; }
+  .wx-stat span:first-child { color:var(--g3); }
+
+  /* ── FORECAST ── */
+  .forecast-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; margin-bottom:6px; }
+  .fc-day { background:#060e06; border:1px solid var(--g3); padding:3px 2px; text-align:center; font-size:10px; line-height:1.6; }
+  .fc-day-name { color:var(--g3); letter-spacing:1px; }
+  .fc-sym { font-size:16px; line-height:1.3; }
+  .fc-hi { color:var(--amb); }
+  .fc-lo { color:#2a6a2a; }
+
+  /* ── WIND COMPASS ── */
+  .compass-row { display:flex; align-items:center; gap:10px; border-top:1px solid var(--g3); padding-top:5px; margin-bottom:5px; }
+  .compass-svg { flex-shrink:0; }
+
+  /* ── SUNRISE/SUNSET ── */
+  .sun-row { display:grid; grid-template-columns:1fr 1fr; gap:4px; font-size:11px; border-top:1px solid var(--g3); padding-top:5px; }
+  .sun-item { display:flex; flex-direction:column; }
+  .sun-label { font-size:9px; color:var(--g3); letter-spacing:1px; }
+  .sun-time { color:var(--amb); font-size:13px; font-family:'VT323',monospace; }
+
+  /* ── RELATIVE INTEL ── */
+  .intel-panel { border:1px solid var(--g3); background:#050e05; padding:5px 8px; margin-top:6px; }
+  .intel-hdr { font-size:10px; color:var(--bc); letter-spacing:2px; margin-bottom:4px; border-bottom:1px solid var(--g3); padding-bottom:2px; }
+  .intel-row { display:flex; justify-content:space-between; align-items:baseline; font-size:10px; line-height:1.9; border-bottom:1px solid #0a1a0a; }
+  .intel-row:last-child { border-bottom:none; }
+  .intel-key { color:var(--g3); flex:1; }
+  .intel-val { color:var(--g2); text-align:right; }
+  .intel-val.warm { color:var(--amb); }
+  .intel-val.cold { color:var(--bc); }
+  .intel-val.above { color:var(--g); }
+  .intel-val.below { color:var(--amb); }
+  .intel-val.pending { color:var(--g3); }
+
+  /* ── WINDY MAP ── */
+  .windy-frame { flex:1; display:flex; flex-direction:column; min-height:0; }
+  .windy-iframe-wrap { flex:1; position:relative; overflow:hidden; }
+  .windy-iframe-wrap iframe { width:100%; height:100%; border:none; filter:sepia(.3) hue-rotate(100deg) saturate(1.8) brightness(.75) contrast(1.1); }
+  .map-overlay-corner { position:absolute; font-size:10px; color:var(--g); background:rgba(0,0,0,.75); padding:2px 5px; pointer-events:none; letter-spacing:1px; z-index:500; }
+  .map-overlay-corner.tl { top:6px; left:6px; }
+  .map-overlay-corner.br { bottom:6px; right:6px; }
+
+  /* ── RADAR MAP ── */
+  .radar-frame { flex:1; display:flex; flex-direction:column; min-height:0; }
+  .radar-map-div { flex:1; min-height:0; }
+  .radar-controls { display:flex; gap:5px; padding:3px 8px; font-size:10px; background:#030804; border-top:1px solid var(--g3); align-items:center; flex-shrink:0; }
+  .btn-sm { background:none; border:1px solid var(--g3); color:var(--g); font-family:var(--font); font-size:10px; padding:1px 5px; cursor:pointer; }
+  .btn-sm:hover { background:var(--g3); }
+  .btn-sm.active { border-color:var(--amb); color:var(--amb); }
+
+  /* ── LIVECAM ── */
+  .livecam-panel { flex-shrink:0; }
+  .cam-controls-row {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:3px 5px; background:#030804; border-bottom:1px solid var(--g3);
+    flex-shrink:0; flex-wrap:wrap; gap:3px;
+  }
+  .cam-type-strip { display:flex; gap:2px; flex-wrap:wrap; padding:0 0 3px 0; }
+  .cam-grid-btn {
+    background:none; border:1px solid var(--g3); color:var(--g3); font-family:var(--font);
+    font-size:9px; padding:1px 6px; cursor:pointer; letter-spacing:1px; transition:all .1s;
+  }
+  .cam-grid-btn:hover { background:var(--g3); color:var(--g); }
+  .cam-grid-btn.active { background:var(--g3); color:var(--g); border-color:var(--g); }
+  .cam-cell { position:relative; overflow:hidden; background:#000; cursor:pointer; }
+  .cam-cell iframe, .cam-cell img { width:100%; height:100%; border:none; object-fit:cover; display:block; }
+  .cam-overlay { position:absolute; inset:0; pointer-events:none; border:1px solid rgba(0,255,65,.1); }
+  .cam-overlay::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.06) 3px,rgba(0,0,0,.06) 4px); }
+  .cam-badge { position:absolute; top:3px; left:4px; background:rgba(0,0,0,.85); color:var(--red); font-size:8px; padding:0 4px; letter-spacing:2px; pointer-events:none; }
+  .cam-badge::before { content:'● '; animation:blink 1.5s step-end infinite; }
+  .cam-slot-num { position:absolute; top:2px; right:4px; font-size:9px; color:rgba(0,255,65,.4); background:rgba(0,0,0,.6); padding:0 3px; pointer-events:none; }
+  .cam-edit-row { display:flex; gap:3px; align-items:center; }
+  .cam-edit-input {
+    flex:1; background:#000; border:1px solid var(--g3); color:var(--g);
+    font-family:var(--font); font-size:10px; padding:2px 4px; outline:none; min-width:0;
+  }
+  .cam-edit-input:focus { border-color:var(--g); }
+  .cam-edit-input::placeholder { color:#1a3a1a; }
+  .btn-cam { background:none; border:1px solid var(--g3); color:var(--g3); font-family:var(--font); font-size:9px; padding:2px 5px; cursor:pointer; letter-spacing:1px; transition:all .1s; white-space:nowrap; }
+  .btn-cam:hover { background:var(--g3); color:var(--g); }
+  .btn-cam.active { border-color:var(--amb); color:var(--amb); background:none; }
+  .btn-cam.active:hover { background:#2a1800; }
+  .btn-cam.danger { border-color:#3a1000; color:#6a2000; }
+  .btn-cam.danger:hover { background:#3a1000; color:var(--red); border-color:var(--red); }
+
+  /* ── SIGNAL LOST OVERLAY ── */
+  .signal-lost-overlay {
+    position:absolute; inset:0; background:rgba(0,0,0,.96);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    z-index:10; gap:3px;
+  }
+  .sl-title {
+    font-family:'VT323',monospace; font-size:20px; color:var(--red);
+    letter-spacing:4px; animation:sl-flicker 2.5s ease infinite; text-shadow:0 0 10px var(--red);
+  }
+  .sl-sub { font-size:9px; color:#4a1000; letter-spacing:2px; }
+  .sl-bars { display:flex; align-items:flex-end; gap:2px; height:18px; margin-top:3px; }
+  .sl-bar { width:3px; background:var(--red); opacity:.3; animation:sl-bar-anim .8s ease-in-out infinite; }
+  .cam-loading { position:absolute; inset:0; background:rgba(0,0,0,.9); display:flex; align-items:center; justify-content:center; z-index:10; }
+  .cam-loading span { font-size:10px; color:var(--g3); letter-spacing:2px; }
+
+  /* ── GUIDE MODAL ── */
+  .guide-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,.82); z-index:10000;
+    display:flex; align-items:center; justify-content:center; padding:16px;
+  }
+  .guide-modal {
+    background:#050e05; border:1px solid var(--g3); max-width:640px; width:100%;
+    max-height:88vh; display:flex; flex-direction:column; position:relative;
+    box-shadow:0 0 40px rgba(0,255,65,.08);
+  }
+  .guide-modal-hdr {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:6px 12px; background:var(--g3); border-bottom:1px solid var(--g4); flex-shrink:0;
+  }
+  .guide-modal-title { font-family:'VT323',monospace; font-size:20px; color:var(--amb); letter-spacing:3px; }
+  .guide-modal-sub { font-size:9px; color:var(--g3); letter-spacing:2px; }
+  .guide-close {
+    background:none; border:1px solid #1a4a1a; color:var(--g3); font-family:var(--font);
+    font-size:14px; width:26px; height:26px; cursor:pointer; display:flex; align-items:center;
+    justify-content:center; flex-shrink:0; transition:all .12s; letter-spacing:0;
+  }
+  .guide-close:hover { background:#1a3a1a; border-color:var(--g); color:var(--g); }
+  .guide-body { overflow-y:auto; padding:12px 14px; flex:1; min-height:0; }
+  .guide-section { margin-bottom:18px; }
+  .guide-section:last-child { margin-bottom:0; }
+  .guide-section-hdr {
+    font-size:10px; color:var(--bc); letter-spacing:3px;
+    border-bottom:1px solid #0a2a0a; padding-bottom:4px; margin-bottom:8px;
+  }
+  .guide-p { font-size:11px; color:#3a8a3a; line-height:1.9; margin-bottom:5px; }
+  .guide-p b { color:var(--g); font-weight:normal; }
+  .guide-p .amb { color:var(--amb); }
+  .guide-row { display:flex; gap:8px; margin-bottom:4px; font-size:11px; line-height:1.7; }
+  .guide-key { color:var(--amb); min-width:96px; flex-shrink:0; }
+  .guide-val { color:#3a8a3a; flex:1; }
+  .guide-tip { font-size:10px; color:#2a5a2a; letter-spacing:1px; border-left:2px solid #1a4a1a; padding-left:8px; margin-top:6px; line-height:1.8; }
+  .guide-kbd {
+    display:inline-block; background:#0a1a0a; border:1px solid var(--g3); color:var(--g);
+    font-family:var(--font); font-size:10px; padding:0 5px; line-height:1.6;
+  }
+  .guide-hint { font-size:9px; color:var(--g3); letter-spacing:2px; text-align:center; padding-top:10px; border-top:1px solid #0a1a0a; margin-top:10px; }
+
+  /* ── GUIDE BUTTON ── */
+  .btn-guide {
+    background:none; border:1px solid #1a4a1a; color:#2a6a2a; font-family:var(--font);
+    font-size:11px; padding:2px 8px; cursor:pointer; letter-spacing:2px;
+    transition:all .12s; flex-shrink:0;
+  }
+  .btn-guide:hover { background:#0a2a0a; border-color:var(--g); color:var(--g); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width:900px) {
+    html,body { overflow:auto; }
+    .app { height:auto; animation:none; }
+    .main-grid { grid-template-columns:1fr; height:auto; overflow:visible; }
+    .left-col,.center-col,.right-col { overflow:visible; min-height:auto; }
+    .windy-iframe-wrap { height:260px; }
+    .radar-map-div { height:200px; }
+  }
+
+  /* ── LEAFLET OVERRIDES ── */
+  .leaflet-container { background:#030804 !important; }
+  .leaflet-control-zoom a { background:var(--gd) !important; color:var(--g) !important; border-color:var(--g3) !important; }
+
+  .loading-msg { display:flex; align-items:center; justify-content:center; height:100%; color:var(--g3); font-size:11px; letter-spacing:2px; }
+</style>
+</head>
+<body>
+<div id="root"><div style="color:#00ff41;font-family:monospace;padding:20px;font-size:13px">LOADING SYSTEMS<span id="ldot">_</span></div></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
+
+// Each sector: { id, name, desc, lat, lon, radioTag }
+// To add a new city: append one object here — nothing else to change.
+const SECTORS = [
+  { id:'ALPHA',   name:'GITMO BAY',      desc:'GUANTANAMO BAY NAS · CUBA',        lat:19.906,  lon:-75.104, radioTag:'synthwave' },
+  { id:'BRAVO',   name:'TOKYO',          desc:'KANTO REGION · JAPAN',             lat:35.676,  lon:139.650, radioTag:'electronic' },
+  { id:'CHARLIE', name:'ARCTIC',         desc:'SVALBARD NODE · NORWAY',           lat:78.220,  lon:15.650,  radioTag:'ambient' },
+  { id:'DELTA',   name:'DIEGO GARCIA',   desc:'BIOT · INDIAN OCEAN',             lat:-7.310,  lon:72.410,  radioTag:'lofi' },
+  { id:'ECHO',    name:'PARIS',          desc:'ILE-DE-FRANCE · FRANCE',           lat:48.8566, lon:2.3522,  radioTag:'jazz' },
+  { id:'FOXTROT', name:'SANTO DOMINGO',  desc:'DISTRITO NACIONAL · D.R.',         lat:18.4861, lon:-69.9312,radioTag:'lofi' },
+  { id:'GOLF',    name:'MIAMI',          desc:'SOUTH FLORIDA · USA',              lat:25.7617, lon:-80.1918,radioTag:'electronic' },
+  { id:'HOTEL',   name:'VALENCIA',       desc:'COMUNITAT VALENCIANA · SPAIN',     lat:39.4699, lon:-0.3774, radioTag:'chillout' },
+  { id:'INDIA',   name:'TOURS',          desc:'CENTRE-VAL DE LOIRE · FRANCE',     lat:47.3941, lon:0.6848,  radioTag:'jazz' },
+  { id:'JULIET',  name:'DUBAI',          desc:'EMIRATE OF DUBAI · UAE',           lat:25.2048, lon:55.2708, radioTag:'electronic' },
+];
+
+// ─── CAM GRID CONFIGS ─────────────────────────────────────────────────────────
+
+// Cam layout system — per-count, multi-layout.
+// slots[i].style = optional CSS grid overrides for spanning cells.
+const CAM_LAYOUTS = {
+  1: [
+    { id:'solo',  label:'▣',    cols:'1fr',                rows:'1fr',             slots:[{}] },
+  ],
+  2: [
+    { id:'2h',    label:'◫◫',  cols:'1fr 1fr',            rows:'1fr',             slots:[{},{}] },
+    { id:'2v',    label:'⊟⊟',  cols:'1fr',                rows:'1fr 1fr',         slots:[{},{}] },
+  ],
+  3: [
+    { id:'3col',  label:'⫴',   cols:'1fr 1fr 1fr',        rows:'1fr',             slots:[{},{},{}] },
+    { id:'3mR',   label:'▣┤',  cols:'2fr 1fr',            rows:'1fr 1fr',         slots:[{style:{gridRow:'1/3'}},{},{}] },
+    { id:'3mT',   label:'⊤═',  cols:'1fr 1fr',            rows:'1fr 1fr',         slots:[{style:{gridColumn:'1/3'}},{},{}] },
+  ],
+  4: [
+    { id:'2x2',   label:'⊞',   cols:'1fr 1fr',            rows:'1fr 1fr',         slots:[{},{},{},{}] },
+    { id:'4mR',   label:'▣┤┤', cols:'2fr 1fr',            rows:'1fr 1fr 1fr',     slots:[{style:{gridRow:'1/4'}},{},{},{}] },
+    { id:'4row',  label:'████', cols:'1fr 1fr 1fr 1fr',   rows:'1fr',             slots:[{},{},{},{}] },
+  ],
+};
+
+const GENRES = [
+  { id:'LOFI',  label:'LO-FI',      tag:'lofi' },
+  { id:'SYNTH', label:'SYNTHWAVE',   tag:'synthwave' },
+  { id:'JAZZ',  label:'JAZZ',        tag:'jazz' },
+  { id:'ELEC',  label:'ELECTRONIC',  tag:'electronic' },
+  { id:'AMB',   label:'AMBIENT',     tag:'ambient' },
+  { id:'CHILL', label:'CHILLOUT',    tag:'chillout' },
+  { id:'DNB',   label:'DRUM+BASS',   tag:'drum and bass' },
+  { id:'CLAS',  label:'CLASSICAL',   tag:'classical' },
+  // Curated talk/culture streams — bypasses Radio Browser, uses hardcoded URLs directly.
+  { id:'TALK', label:'TALK+CULTURE', tag:'talk',
+    stations: [
+      { stationuuid:'t-nprnews',  name:'NPR NEWS',          url_resolved:'https://npr-ice.streamguys1.com/live.mp3',                        country:'US', tags:'news talk' },
+      { stationuuid:'t-bbc-ws',   name:'BBC WORLD SERVICE', url_resolved:'https://stream.live.vc.bbcmedia.co.uk/bbc_world_service',         country:'GB', tags:'news talk' },
+      { stationuuid:'t-bbc-r4',   name:'BBC RADIO 4',       url_resolved:'https://stream.live.vc.bbcmedia.co.uk/bbc_radio4',               country:'GB', tags:'talk culture' },
+      { stationuuid:'t-franceint',name:'FRANCE INTER',       url_resolved:'https://icecast.radiofrance.fr/franceinter-hifi.aac',            country:'FR', tags:'talk culture' },
+      { stationuuid:'t-francecul',name:'FRANCE CULTURE',     url_resolved:'https://icecast.radiofrance.fr/franceculture-hifi.aac',          country:'FR', tags:'culture' },
+      { stationuuid:'t-rfi-fr',   name:'RFI MONDE (FR)',     url_resolved:'https://rfimonde64k.ice.infomaniak.ch/rfimonde-64.mp3',          country:'FR', tags:'news talk' },
+      { stationuuid:'t-rfi-en',   name:'RFI ENGLISH',        url_resolved:'https://rfieng64k.ice.infomaniak.ch/rfieng-64.mp3',             country:'FR', tags:'news talk' },
+      { stationuuid:'t-dw',       name:'DEUTSCHE WELLE',     url_resolved:'https://dw-europe.cdn.iono.fm/dw-english.mp3',                  country:'DE', tags:'news talk' },
+      { stationuuid:'t-rnz',      name:'RADIO NZ NATIONAL',  url_resolved:'https://radionz-ice.streamguys1.com/national.mp3',              country:'NZ', tags:'talk culture' },
+    ]
+  },
+];
+
+// Dashboard layout presets — change column proportions to suit what you're focused on.
+const DASH_LAYOUTS = [
+  { id:'balanced', label:'BALANCED', cols:'240px 1fr 300px' },
+  { id:'map',      label:'MAP+',     cols:'190px 2fr 230px' },
+  { id:'cam',      label:'CAM+',     cols:'190px 1fr 420px' },
+  { id:'comms',    label:'COMMS+',   cols:'300px 1fr 220px' },
+  { id:'center',   label:'CENTER',   cols:'170px 3fr 170px' },
+];
+
+const WMO = {
+  0:{sym:'☀',lbl:'CLEAR SKY'},   1:{sym:'🌤',lbl:'MOSTLY CLEAR'}, 2:{sym:'⛅',lbl:'PARTLY CLOUDY'},
+  3:{sym:'☁',lbl:'OVERCAST'},    45:{sym:'🌫',lbl:'FOGGY'},        48:{sym:'🌫',lbl:'RIME FOG'},
+  51:{sym:'🌦',lbl:'DRIZZLE-LT'},53:{sym:'🌦',lbl:'DRIZZLE-MD'},  55:{sym:'🌧',lbl:'DRIZZLE-HV'},
+  61:{sym:'🌧',lbl:'RAIN-LT'},   63:{sym:'🌧',lbl:'RAIN-MD'},      65:{sym:'🌧',lbl:'RAIN-HV'},
+  71:{sym:'❄',lbl:'SNOW-LT'},   73:{sym:'❄',lbl:'SNOW-MD'},       75:{sym:'❄',lbl:'SNOW-HV'},
+  77:{sym:'🌨',lbl:'SNOW GRNS'}, 80:{sym:'🌦',lbl:'SHWRS-LT'},    81:{sym:'🌧',lbl:'SHWRS-MD'},
+  82:{sym:'⛈',lbl:'SHWRS-VHV'}, 85:{sym:'🌨',lbl:'SNW-SHWRS'},   86:{sym:'🌨',lbl:'SNW-SHWRS+'},
+  95:{sym:'⛈',lbl:'T-STORM'},   96:{sym:'⛈',lbl:'T-STORM+HAIL'}, 99:{sym:'⛈',lbl:'T-STRM+HL+'},
+};
+
+const SANTO_DOMINGO = { lat:18.4861, lon:-69.9312 };
+const LIMA_ELEV_M   = 1550;
+const VALENCIA      = { lat:39.4699, lon:-0.3774 };
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+
+const wmo  = c => WMO[c] || { sym:'?', lbl:'UNKNOWN' };
+const DIRS = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+const bearing  = deg => DIRS[Math.round(deg/22.5)%16];
+const dayName  = iso => { if (!iso) return '---'; const d=new Date(iso+'T12:00:00Z'); return ['SUN','MON','TUE','WED','THU','FRI','SAT'][d.getUTCDay()]; };
+const fmtSun   = iso => { if (!iso) return '--:--'; const p=iso.split('T'); return p.length<2?'--:--':p[1].substring(0,5); };
+const beaufort = s => s<1?0:s<6?1:s<12?2:s<20?3:s<29?4:s<39?5:s<50?6:s<62?7:s<75?8:s<89?9:s<103?10:s<118?11:12;
+
+function haversine(lat1,lon1,lat2,lon2) {
+  const R=6371, toR=d=>d*Math.PI/180;
+  const dLat=toR(lat2-lat1), dLon=toR(lon2-lon1);
+  const a=Math.sin(dLat/2)**2+Math.cos(toR(lat1))*Math.cos(toR(lat2))*Math.sin(dLon/2)**2;
+  return Math.round(R*2*Math.asin(Math.sqrt(a)));
+}
+
+// ─── CAM URL PARSER ───────────────────────────────────────────────────────────
+// Auto-detects source type from whatever the user pastes.
+// Returns { type: 'windy'|'youtube'|'stream'|'iframe', id?, url? } or null.
+
+function parseCamInput(raw) {
+  const s = (raw || '').trim();
+  if (!s) return null;
+
+  // Windy webcam page or embed URL  →  extract numeric ID
+  const windyPage  = s.match(/windy\.com\/webcams\/(\d{7,13})/);
+  const windyEmbed = s.match(/webcams\.windy\.com\/.*\/player\/(\d{7,13})/);
+  if (windyPage || windyEmbed) return { type:'windy', id:(windyPage||windyEmbed)[1] };
+
+  // Bare Windy ID (7–13 digits, no letters)
+  if (/^\d{7,13}$/.test(s)) return { type:'windy', id:s };
+
+  // YouTube full URL or embed URL
+  const ytFull = s.match(/(?:youtu\.be\/|[?&]v=|\/embed\/)([A-Za-z0-9_-]{11})/);
+  if (ytFull) return { type:'youtube', id:ytFull[1] };
+
+  // Bare YouTube ID (exactly 11 chars, must contain at least one letter or underscore/dash)
+  if (/^[A-Za-z0-9_-]{11}$/.test(s) && /[A-Za-z_-]/.test(s)) {
+    return { type:'youtube', id:s };
+  }
+
+  // MJPEG / direct image stream (served as img tag — no cross-origin issues)
+  if (s.startsWith('http') && /mjpe?g|axis-cgi|videostream\.cgi|\.cgi\?/i.test(s)) {
+    return { type:'stream', url:s };
+  }
+
+  // Generic embeddable URL → iframe
+  if (s.startsWith('http')) return { type:'iframe', url:s };
+
+  return null; // unrecognized
+}
+
+// ─── GUIDE PANEL ─────────────────────────────────────────────────────────────
+
+function GuidePanel({ onClose }) {
+  // Close on overlay click or ESC key
+  useEffect(() => {
+    const onKey = e => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  return (
+    <div className="guide-overlay" onClick={onClose}>
+      <div className="guide-modal" onClick={e => e.stopPropagation()}>
+
+        <div className="guide-modal-hdr">
+          <div>
+            <div className="guide-modal-title">OPERATOR GUIDE</div>
+            <div className="guide-modal-sub">GITMO RADIO // TACTICAL OPS CONSOLE</div>
+          </div>
+          <button className="guide-close" onClick={onClose} title="Close (Esc)">✕</button>
+        </div>
+
+        <div className="guide-body">
+
+          {/* GETTING STARTED */}
+          <div className="guide-section">
+            <div className="guide-section-hdr">◈ GETTING STARTED</div>
+            <p className="guide-p">
+              GITMO RADIO is a <b>single HTML file</b> — no install, no server needed for most features.
+              Just open it in any modern browser (Chrome or Firefox recommended) and everything loads automatically.
+            </p>
+            <p className="guide-p">
+              Weather, radio stations, maps, and Windy cams all work directly from your computer.
+              <span className="amb"> YouTube live cams require HTTPS</span> — they won't load when you open the file
+              directly. See <b>HOSTING</b> below to go live in minutes for free.
+            </p>
+          </div>
+
+          {/* SECTORS */}
+          <div className="guide-section">
+            <div className="guide-section-hdr">◈ SECTORS</div>
+            <p className="guide-p">
+              A <b>Sector</b> is your active location — it controls weather data, the tactical map center, radar position, and suggested live cams.
+            </p>
+            <div className="guide-row"><span className="guide-key">PRESET LIST</span><span className="guide-val">10 pre-built cities (Gitmo Bay, Tokyo, Arctic, Diego Garcia, Paris, Santo Domingo, Miami, Valencia, Tours, Dubai). Click any to activate.</span></div>
+            <div className="guide-row"><span className="guide-key">CITY SEARCH</span><span className="guide-val">Type any city name in the search box and press Enter or ⊕. A dropdown shows matches — click one to set it as your sector.</span></div>
+            <div className="guide-row"><span className="guide-key">GPS 📍</span><span className="guide-val">Click the GPS button to pull your device's current location. Browser will ask permission. Shows GPS LOCKED ✓ when acquired.</span></div>
+            <div className="guide-tip">Switching sectors does not reset your live cam setup — cameras stay where you left them.</div>
+          </div>
+
+          {/* RADIO */}
+          <div className="guide-section">
+            <div className="guide-section-hdr">◈ RADIO // COMMS MODULE</div>
+            <p className="guide-p">The radio panel is in the lower-left. It has two tabs: <b>STATIONS</b> and <b>⚙ SYS.CONFIG</b>.</p>
+            <div className="guide-row"><span className="guide-key">GENRES</span><span className="guide-val">Lo-Fi · Synthwave · Jazz · Electronic · Ambient · Chillout · Drum+Bass · Classical. Click a pill to switch. Stations reload automatically from Radio Browser (free, no key needed).</span></div>
+            <div className="guide-row"><span className="guide-key">STATIONS</span><span className="guide-val">Up to 8 stations are listed. Click any to tune in immediately. The active station is highlighted in amber.</span></div>
+            <div className="guide-row"><span className="guide-key">PLAY / PAUSE</span><span className="guide-val">▶ / ■ button at the bottom. Volume slider is next to it. If a station drops out, it auto-advances to the next one.</span></div>
+            <div className="guide-row"><span className="guide-key">SOUNDCLOUD</span><span className="guide-val">Go to ⚙ SYS.CONFIG → set mode to SOUNDCLOUD → paste any SoundCloud track or playlist URL → LOAD SC STREAM. The embedded player appears in the STATIONS tab.</span></div>
+            <div className="guide-row"><span className="guide-key">LOCAL FILE</span><span className="guide-val">SYS.CONFIG → FILE mode → click LOAD LOCAL AUDIO to pick an MP3, OGG, or WAV from your computer.</span></div>
+            <div className="guide-row"><span className="guide-key">STREAM URL</span><span className="guide-val">SYS.CONFIG → URL mode → paste any Icecast or HTTP stream URL and press TUNE IN.</span></div>
+          </div>
+
+          {/* LIVE CAMS */}
+          <div className="guide-section">
+            <div className="guide-section-hdr">◈ LIVE CAMS</div>
+            <p className="guide-p">The LIVECAM panel is in the lower-right. You can show 1–4 camera panes at once.</p>
+            <div className="guide-row"><span className="guide-key">PANES</span><span className="guide-val">Click 1 / 2 / 3 / 4 to set how many cameras show. Each count has multiple layout options — pick from the LAYOUT buttons.</span></div>
+            <div className="guide-row"><span className="guide-key">SELECT A SLOT</span><span className="guide-val">Click any camera pane to select it (amber outline). Then use the editor below to set its source.</span></div>
+            <div className="guide-row"><span className="guide-key">WINDY 🌬</span><span className="guide-val">Recommended. Paste a Windy webcam page URL (windy.com/webcams/…) or just the numeric ID. Works from file:// and anywhere.</span></div>
+            <div className="guide-row"><span className="guide-key">YOUTUBE ▶</span><span className="guide-val">Paste a YouTube video URL or the 11-character video ID. Requires HTTPS hosting to display.</span></div>
+            <div className="guide-row"><span className="guide-key">MJPEG 📷</span><span className="guide-val">Paste a direct MJPEG or image stream URL (e.g. http://…/cam.mjpeg). Shows SIGNAL LOST if the stream goes offline.</span></div>
+            <div className="guide-row"><span className="guide-key">IFRAME 🔗</span><span className="guide-val">Any embeddable URL — EarthCam, SkylineWebcams, custom embed pages.</span></div>
+            <div className="guide-row"><span className="guide-key">AUTO-DISCOVER</span><span className="guide-val">Click ⊕ AUTO to automatically fill all slots with nearby Windy webcams. Requires a free Windy API key (add it in SYS.CONFIG).</span></div>
+            <div className="guide-row"><span className="guide-key">↗ BROWSE</span><span className="guide-val">Opens Windy's webcam map centered on the active sector so you can find real cam IDs to paste in.</span></div>
+          </div>
+
+          {/* WEATHER & MAPS */}
+          <div className="guide-section">
+            <div className="guide-section-hdr">◈ WEATHER {'&'} MAPS</div>
+            <div className="guide-row"><span className="guide-key">TACTICAL MAP</span><span className="guide-val">Windy.com wind overlay — ECMWF model, surface level. Updates with the active sector. Pan and zoom freely.</span></div>
+            <div className="guide-row"><span className="guide-key">RADAR</span><span className="guide-val">Animated precipitation radar from RainViewer. Auto-plays through recent frames. Use ◀ ▶ to step manually, ⏸ PAUSE to freeze on a frame.</span></div>
+            <div className="guide-row"><span className="guide-key">CONDITIONS</span><span className="guide-val">Live weather from Open-Meteo (no API key needed) — current temp, feels-like, wind speed and direction, humidity, 4-day forecast, and sunrise/sunset times.</span></div>
+            <div className="guide-row"><span className="guide-key">RELATIVE INTEL</span><span className="guide-val">Tactical reference panel: distance from active sector to Santo Domingo, elevation vs. Lima baseline (1550m), and temperature vs. current Valencia reading.</span></div>
+          </div>
+
+          {/* SYS.CONFIG */}
+          <div className="guide-section">
+            <div className="guide-section-hdr">◈ SYS.CONFIG</div>
+            <p className="guide-p">Open via COMMS MODULE (radio panel, left side) → <b>⚙ SYS.CONFIG</b> tab.</p>
+            <div className="guide-row"><span className="guide-key">AUDIO SOURCE</span><span className="guide-val">Switch between STREAM (Radio Browser), FILE (local audio), URL (stream URL), and SOUNDCLOUD modes.</span></div>
+            <div className="guide-row"><span className="guide-key">LOCATION</span><span className="guide-val">Shows your active sector. Change it from the SECTOR SELECT panel above.</span></div>
+            <div className="guide-row"><span className="guide-key">WINDY API KEY</span><span className="guide-val">Get a free key at api.windy.com/keys. Paste it here to unlock AUTO-DISCOVER in live cams (finds nearby cameras automatically). Your key is saved in the browser.</span></div>
+            <div className="guide-row"><span className="guide-key">DEPLOYMENT</span><span className="guide-val">Reminder that YouTube cams need HTTPS. Windy and MJPEG work without hosting.</span></div>
+          </div>
+
+          {/* HOSTING */}
+          <div className="guide-section">
+            <div className="guide-section-hdr">◈ HOSTING // GOING LIVE</div>
+            <p className="guide-p">
+              To enable YouTube live cams and share the app with others, host it for free on
+              <span className="amb"> GitHub Pages</span>, <span className="amb">Netlify</span>, or <span className="amb">Cloudflare Pages</span> — each takes about 5 minutes.
+              The included <b>GitmoRadio-GitHub-Pages-Guide.md</b> file walks you through the GitHub Pages process step by step.
+              Once live, all features including YouTube embeds will work.
+            </p>
+          </div>
+
+          <div className="guide-hint">PRESS <span className="guide-kbd">?</span> TO TOGGLE THIS GUIDE · <span className="guide-kbd">ESC</span> TO CLOSE</div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── HEADER ──────────────────────────────────────────────────────────────────
+
+function Header({ clock, location, onGuide }) {
+  return (
+    <header className="header">
+      <div className="header-logo">GITMO <span>RADIO</span></div>
+      <div className="header-mid">
+        <div style={{letterSpacing:'3px',fontSize:'10px',color:'var(--g3)'}}>▸ {location.id} · {location.name} ◂</div>
+        <div style={{color:'var(--g3)',fontSize:'9px'}}>
+          {Math.abs(location.lat).toFixed(3)}°{location.lat>=0?'N':'S'} / {Math.abs(location.lon).toFixed(3)}°{location.lon>=0?'E':'W'}
+        </div>
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
+        <button className="btn-guide" onClick={onGuide} title="Operator Guide (press ?)">? GUIDE</button>
+        <div className="header-clock">
+          <div>{clock}</div>
+          <div style={{color:'var(--g3)',fontSize:'9px',letterSpacing:'2px'}}>ZULU TIME <span className="blink">█</span></div>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+// ─── INCIDENT COUNTER ────────────────────────────────────────────────────────
+
+function IncidentCounter({ days, onReset, flashing }) {
+  return (
+    <div className={`incident-bar${flashing?' flashing':''}`}>
+      <span className="incident-warn">⚠</span>
+      <span className="incident-label">DAYS SINCE LAST INCIDENT:</span>
+      <div style={{display:'flex',alignItems:'baseline',gap:'4px'}}>
+        <span style={{fontSize:'10px',color:'#aa6600'}}>DAY</span>
+        <span className="incident-count">{String(days).padStart(3,'0')}</span>
+      </div>
+      <button className="incident-reset" onClick={onReset}>[ RESET ]</button>
+    </div>
+  );
+}
+
+// ─── SECTOR SELECTOR ─────────────────────────────────────────────────────────
+
+function SectorSelector({ location, onLocationChange, onSectorSelect }) {
+  const [searchInput, setSearchInput]   = useState('');
+  const [results, setResults]           = useState([]);
+  const [searching, setSearching]       = useState(false);
+  const [gpsStatus, setGpsStatus]       = useState('idle'); // idle | acquiring | ok | denied
+
+  // ── City geocoding via Open-Meteo (free, no API key)
+  const handleSearch = async () => {
+    const q = searchInput.trim();
+    if (!q) return;
+    setSearching(true); setResults([]);
+    try {
+      const res  = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=6&language=en&format=json`);
+      const data = await res.json();
+      setResults(data.results || []);
+    } catch { setResults([]); }
+    setSearching(false);
+  };
+
+  const handleResultSelect = (r) => {
+    onLocationChange({
+      id: 'CUSTOM',
+      name: r.name.toUpperCase(),
+      desc: `${r.admin1 ? r.admin1.toUpperCase()+' · ' : ''}${(r.country||'').toUpperCase()}`,
+      lat:  r.latitude,
+      lon:  r.longitude,
+      tz:   r.timezone || '',
+      radioTag: 'electronic',
+    });
+    setResults([]); setSearchInput('');
+  };
+
+  // ── GPS
+  const handleGPS = () => {
+    if (!navigator.geolocation) { setGpsStatus('denied'); return; }
+    setGpsStatus('acquiring');
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const { latitude: lat, longitude: lon } = pos.coords;
+        setGpsStatus('ok');
+        onLocationChange({
+          id: 'CUSTOM', name: 'GPS LOC',
+          desc: `${lat.toFixed(3)}, ${lon.toFixed(3)}`,
+          lat, lon,
+          tz: Intl.DateTimeFormat().resolvedOptions().timeZone || '',
+          radioTag: 'electronic',
+        });
+        setResults([]); setSearchInput('');
+      },
+      () => setGpsStatus('denied'),
+      { timeout: 8000, enableHighAccuracy: false }
+    );
+  };
+
+  return (
+    <div className="sector-selector">
+      <div className="sector-hdr">
+        <span>◈ SECTOR SELECT</span>
+        <span style={{color:'var(--bc)',fontSize:'10px'}}>{location.id}</span>
+      </div>
+
+      {/* Search + GPS row */}
+      <div className="sector-search-row">
+        <input
+          className="sector-search-input"
+          placeholder="SEARCH CITY…"
+          value={searchInput}
+          onChange={e => { setSearchInput(e.target.value); if (results.length) setResults([]); }}
+          onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
+        />
+        <button className="btn-sector-act" onClick={handleSearch} title="Search city">
+          {searching ? '…' : '⊕'}
+        </button>
+        <button
+          className="btn-sector-act"
+          onClick={handleGPS}
+          title="Use device GPS"
+          style={{color: gpsStatus==='ok'?'var(--g)' : gpsStatus==='denied'?'var(--red)' : undefined}}
+        >
+          {gpsStatus === 'acquiring' ? '…' : '📍'}
+        </button>
+      </div>
+
+      {/* Geocoding results dropdown */}
+      {results.length > 0 && (
+        <div className="sector-results">
+          {results.map((r, i) => (
+            <div key={i} className="sector-result-item" onClick={() => handleResultSelect(r)}>
+              <span style={{color:'var(--bc)'}}>{r.name}</span>
+              {r.admin1 && <span style={{color:'#005588',fontSize:'9px'}}>, {r.admin1}</span>}
+              <span style={{color:'#003366',fontSize:'9px'}}>{r.country ? ', '+r.country : ''}</span>
+            </div>
+          ))}
+          <div className="sector-result-item"
+            style={{color:'#1a3a1a',textAlign:'center',fontSize:'9px',letterSpacing:'1px'}}
+            onClick={() => setResults([])}>
+            [ CLOSE ]
+          </div>
+        </div>
+      )}
+
+      {/* Preset sector list */}
+      <div className="sector-list">
+        {SECTORS.map(s => (
+          <div key={s.id}
+            className={`sector-item${location.id === s.id ? ' active' : ''}`}
+            onClick={() => { onSectorSelect(s); setResults([]); }}
+          >
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'baseline',gap:'4px'}}>
+              <span className="sector-name">{s.name}</span>
+              <span className="sector-id">{s.id}</span>
+            </div>
+            <span className="sector-desc">{s.desc}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Active location display */}
+      <div className="sector-coords">
+        <div>
+          {Math.abs(location.lat).toFixed(3)}°{location.lat>=0?'N':'S'} /&nbsp;
+          {Math.abs(location.lon).toFixed(3)}°{location.lon>=0?'E':'W'}
+        </div>
+        {location.tz && <div style={{color:'var(--g3)',fontSize:'9px'}}>{location.tz}</div>}
+        {gpsStatus === 'ok'     && <div style={{color:'var(--g)',  fontSize:'9px'}}>GPS LOCKED ✓</div>}
+        {gpsStatus === 'denied' && <div style={{color:'var(--red)',fontSize:'9px'}}>GPS ACCESS DENIED</div>}
+      </div>
+    </div>
+  );
+}
+
+// ─── GENRE SELECTOR ──────────────────────────────────────────────────────────
+
+function GenreSelector({ genre, onGenre }) {
+  return (
+    <div className="genre-strip">
+      {GENRES.map(g => (
+        <button key={g.id} className={`genre-pill${genre.id===g.id?' active':''}`} onClick={() => onGenre(g)}>
+          {g.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ─── VU METER ────────────────────────────────────────────────────────────────
+
+function VUMeter({ bars, playing }) {
+  return (
+    <div className="vu-wrap">
+      {bars.map((h,i) => {
+        const pct = playing ? Math.max(3,h) : 3;
+        const color = h>75?'#ff3300':h>45?'#ffb000':'#00ff41';
+        return <div key={i} className="vu-bar" style={{height:`${pct}%`,background:color,boxShadow:playing?`0 0 3px ${color}`:'none'}}/>;
+      })}
+    </div>
+  );
+}
+
+// ─── SYS.CONFIG PANEL ────────────────────────────────────────────────────────
+
+function SysConfig({ audioConfig, location, windyConfig }) {
+  return (
+    <div className="config-body">
+      <div className="config-sub-hdr">╔═ AUDIO SOURCE ══════════════╗</div>
+      <div className="config-mode-tabs">
+        {[['stream','STREAM'],['file','FILE'],['url','URL'],['sc','SOUNDCLOUD']].map(([m,lbl]) => (
+          <button key={m} className={`config-mode-btn${audioConfig.mode===m?' active':''}`} onClick={() => audioConfig.setMode(m)}>{lbl}</button>
+        ))}
+      </div>
+
+      {audioConfig.mode === 'stream' && (
+        <div className="config-info">
+          <div>SRC · RADIO BROWSER API</div>
+          <div>GENRE · <span style={{color:'var(--g)'}}>{audioConfig.genreLabel}</span></div>
+          <div style={{marginTop:'2px',color:'#1a5a1a'}}>SWITCH GENRE IN ← STATIONS TAB</div>
+        </div>
+      )}
+
+      {audioConfig.mode === 'file' && (
+        <div>
+          <div className="config-info">LOAD A LOCAL MP3/OGG/WAV FILE</div>
+          <input type="file" accept="audio/*" id="cfg-audio-file" onChange={audioConfig.onFileLoad}/>
+          <label htmlFor="cfg-audio-file" className="config-file-label">📁 LOAD LOCAL AUDIO</label>
+          {audioConfig.customAudio && <div className="config-active-val">▶ {audioConfig.customAudio.name}</div>}
+        </div>
+      )}
+
+      {audioConfig.mode === 'url' && (
+        <div>
+          <div className="config-info">PASTE ICECAST / HTTP STREAM URL</div>
+          <input className="config-input" type="text" placeholder="https://stream.somafm.com/..."
+            value={audioConfig.streamUrl} onChange={e=>audioConfig.setStreamUrl(e.target.value)}
+            onKeyDown={e=>{ if (e.key==='Enter') audioConfig.onUrlTune(); }}/>
+          <div className="btn-config-row" style={{marginTop:'4px'}}>
+            <button className="btn-config" style={{flex:1,textAlign:'center'}} onClick={audioConfig.onUrlTune}>▶ TUNE IN</button>
+          </div>
+        </div>
+      )}
+
+      {audioConfig.mode === 'sc' && (
+        <div>
+          <div className="config-info">PASTE A SOUNDCLOUD TRACK OR PLAYLIST URL</div>
+          <input className="config-input" type="text" placeholder="https://soundcloud.com/..."
+            value={audioConfig.scUrl} onChange={e=>audioConfig.setScUrl(e.target.value)}
+            onKeyDown={e=>{ if (e.key==='Enter') audioConfig.onScTune(); }}/>
+          <div className="btn-config-row" style={{marginTop:'4px'}}>
+            <button className="btn-config" style={{flex:1,textAlign:'center'}} onClick={audioConfig.onScTune}>▶ LOAD SC STREAM</button>
+          </div>
+          {audioConfig.scActive && (
+            <div className="config-active-val" style={{marginTop:'4px'}}>
+              ACTIVE · <span style={{color:'var(--g)'}}>{audioConfig.scActive.substring(0,36)}…</span>
+            </div>
+          )}
+          <div className="config-info" style={{marginTop:'4px',color:'#2a5a2a'}}>
+            WIDGET CONTROLS APPEAR IN STATIONS TAB
+          </div>
+        </div>
+      )}
+
+      <hr className="config-divider"/>
+
+      <div className="config-sub-hdr">╔═ LOCATION ══════════════════╗</div>
+      <div className="config-info">
+        <div>ACTIVE · <span style={{color:'var(--g)'}}>{location.name}</span></div>
+        <div>LAT/LON · {location.lat.toFixed(3)}, {location.lon.toFixed(3)}</div>
+        {location.tz && <div>TZ · <span style={{color:'var(--bc)'}}>{location.tz}</span></div>}
+        <div style={{marginTop:'2px',color:'#1a5a1a'}}>CHANGE IN ← SECTOR PANEL OR GPS/SEARCH</div>
+      </div>
+
+      <hr className="config-divider"/>
+
+      <div className="config-sub-hdr">╔═ WINDY CAM API ═════════════╗</div>
+      <div className="config-info" style={{marginBottom:'4px'}}>
+        FREE KEY AT <a href="https://api.windy.com/keys" target="_blank" style={{color:'var(--bc)'}}>api.windy.com/keys</a>
+        <br/>ENABLES AUTO-DISCOVER IN LIVE CAMS
+      </div>
+      <input
+        className="config-input"
+        type="text"
+        placeholder="PASTE WINDY API KEY…"
+        value={windyConfig.key}
+        onChange={e => windyConfig.setKey(e.target.value)}
+      />
+      {windyConfig.key
+        ? <div className="config-active-val" style={{color:'var(--g)',marginTop:'2px'}}>KEY STORED ✓</div>
+        : <div className="config-info" style={{color:'#1a3a1a',marginTop:'2px'}}>NO KEY — AUTO-DISCOVER DISABLED</div>
+      }
+
+      <hr className="config-divider"/>
+
+      <div className="config-sub-hdr">╔═ DEPLOYMENT ════════════════╗</div>
+      <div className="config-info">
+        <div style={{color:'#7a4400',marginBottom:'3px'}}>⚠ YOUTUBE CAMS REQUIRE HTTPS</div>
+        <div>File:// blocks YouTube embeds.</div>
+        <div>Host on GitHub Pages, Netlify,</div>
+        <div>or Cloudflare Pages to enable.</div>
+        <div style={{marginTop:'4px',color:'var(--g3)'}}>✓ Windy + MJPEG work right now.</div>
+        <div style={{marginTop:'4px',color:'#004400'}}>
+          <a href="https://pages.github.com" target="_blank" style={{color:'#0055aa'}}>GitHub Pages</a>
+          {' · '}
+          <a href="https://netlify.com" target="_blank" style={{color:'#0055aa'}}>Netlify</a>
+          {' · '}
+          <a href="https://pages.cloudflare.com" target="_blank" style={{color:'#0055aa'}}>Cloudflare</a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── RADIO PLAYER ────────────────────────────────────────────────────────────
+
+function RadioPlayer({ station, stations, playing, onToggle, volume, onVolume, onStation, vuBars, audioConfig, genre, onGenre, location, windyConfig, isExpanded, onExpand }) {
+  const [tab, setTab] = useState('stations');
+
+  const nowLabel = useMemo(() => {
+    if (audioConfig.mode === 'sc') return audioConfig.scActive ? 'SOUNDCLOUD ACTIVE' : 'NO SC STREAM';
+    if (audioConfig.mode === 'stream') return station ? station.name : 'SCANNING...';
+    return audioConfig.customAudio ? audioConfig.customAudio.name : (audioConfig.mode==='file'?'NO FILE LOADED':'NO URL SET');
+  }, [audioConfig, station]);
+
+  const showAudioControls = audioConfig.mode !== 'sc';
+
+  return (
+    <div className={`panel radio-panel${isExpanded?' panel-fullscreen':''}`}>
+      <div className="panel-hdr panel-hdr-amber">
+        <span>◈ COMMS MODULE</span>
+        <span style={{fontSize:'9px',color:'#7a5500'}}>{audioConfig.mode.toUpperCase()} MODE</span>
+        <button className="panel-expand-btn" onClick={onExpand} title={isExpanded?'Restore':'Expand'} style={{color:isExpanded?'var(--amb)':'#7a5500'}}>{isExpanded?'⊠':'↗'}</button>
+      </div>
+
+      <div className="comms-tab-strip">
+        <button className={`comms-tab${tab==='stations'?' active':''}`} onClick={() => setTab('stations')}>STATIONS</button>
+        <button className={`comms-tab${tab==='config'?' active':''}`} onClick={() => setTab('config')}>⚙ SYS.CONFIG</button>
+      </div>
+
+      {tab === 'stations' && (
+        <div style={{flex:1,overflow:'hidden',display:'flex',flexDirection:'column',padding:'5px 8px',minHeight:0}}>
+          {audioConfig.mode !== 'sc' && (
+            <>
+              <GenreSelector genre={genre} onGenre={onGenre}/>
+              <div className="station-list">
+                {stations.slice(0,8).map((s,i) => (
+                  <div key={s.stationuuid||i}
+                    className={`station-item${station&&station.stationuuid===s.stationuuid?' active':''}`}
+                    onClick={() => onStation(s)} title={s.name}>
+                    {s.name.length>28 ? s.name.substring(0,28)+'…' : s.name}
+                  </div>
+                ))}
+                {stations.length===0 && <div style={{color:'var(--g3)',fontSize:'10px'}}>AWAITING DATA<span className="blink">_</span></div>}
+              </div>
+            </>
+          )}
+
+          {audioConfig.mode === 'sc' && (
+            <div style={{flex:1,display:'flex',flexDirection:'column',minHeight:0}}>
+              {audioConfig.scActive ? (
+                <div className="sc-widget-wrap" style={{flex:1,minHeight:'100px'}}>
+                  <iframe
+                    src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(audioConfig.scActive)}&auto_play=false&color=%2300ff41&show_artwork=true&show_user=false&show_reposts=false&show_teaser=false&visual=false`}
+                    style={{width:'100%',height:'100%',border:'none',display:'block'}}
+                    scrolling="no" allow="autoplay"
+                    title="SoundCloud Widget"
+                  />
+                </div>
+              ) : (
+                <div style={{color:'var(--g3)',fontSize:'10px',padding:'6px 0',lineHeight:'1.8'}}>
+                  <div>NO STREAM LOADED</div>
+                  <div style={{marginTop:'4px'}}>→ PASTE SOUNDCLOUD URL IN ⚙ SYS.CONFIG</div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {tab === 'config' && (
+        <SysConfig audioConfig={audioConfig} location={location} windyConfig={windyConfig}/>
+      )}
+
+      {/* Always-visible controls */}
+      <div style={{padding:'5px 8px',flexShrink:0,borderTop:'1px solid var(--g3)'}}>
+        <div className="radio-now">{playing&&showAudioControls?`▶ ${nowLabel}`:nowLabel}</div>
+        {showAudioControls && (
+          <div className="radio-controls">
+            <button className={`btn-play${playing?' playing':''}`} onClick={onToggle}>{playing?'■':'▶'}</button>
+            <div className="volume-row">
+              <span>VOL</span>
+              <input type="range" min="0" max="1" step="0.01" value={volume} onChange={e=>onVolume(parseFloat(e.target.value))}/>
+              <span>{Math.round(volume*100)}</span>
+            </div>
+          </div>
+        )}
+        {!showAudioControls && (
+          <div style={{fontSize:'9px',color:'var(--g3)',marginBottom:'4px',letterSpacing:'1px'}}>
+            ◈ SC WIDGET CONTROLS PLAYBACK
+          </div>
+        )}
+        <VUMeter bars={vuBars} playing={playing || (audioConfig.mode==='sc'&&!!audioConfig.scActive)}/>
+        {audioConfig.mode==='stream' && station && (
+          <div style={{fontSize:'9px',color:'var(--g3)',marginTop:'2px'}}>
+            {station.country||'??'} · {station.codec||'?'} · {station.bitrate?station.bitrate+'kbps':'?kbps'}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── WIND COMPASS SVG ────────────────────────────────────────────────────────
+
+function WindCompass({ speed, dir }) {
+  const cx=52,cy=52,R=46;
+  const rad=(dir*Math.PI)/180;
+  const ax=cx+Math.sin(rad)*30, ay=cy-Math.cos(rad)*30;
+  const ticks=Array.from({length:36},(_,i)=>{
+    const a=(i*10*Math.PI)/180, inner=i%9===0?R-8:R-4;
+    return {x1:cx+Math.sin(a)*inner,y1:cy-Math.cos(a)*inner,x2:cx+Math.sin(a)*R,y2:cy-Math.cos(a)*R,major:i%9===0};
+  });
+  return (
+    <svg width="104" height="104" viewBox="0 0 104 104" className="compass-svg">
+      <circle cx={cx} cy={cy} r={R} fill="none" stroke="#1a4a1a" strokeWidth="1"/>
+      <circle cx={cx} cy={cy} r={R-12} fill="none" stroke="#0d2a0d" strokeWidth="1"/>
+      {ticks.map((t,i)=><line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} stroke={t.major?'#2a6a2a':'#1a3a1a'} strokeWidth={t.major?1.5:.5}/>)}
+      {[{lbl:'N',d:0},{lbl:'E',d:90},{lbl:'S',d:180},{lbl:'W',d:270}].map(c=>{
+        const a=(c.d*Math.PI)/180;
+        return <text key={c.lbl} x={cx+Math.sin(a)*(R-20)} y={cy-Math.cos(a)*(R-20)} textAnchor="middle" dominantBaseline="middle" fill="var(--g)" fontSize="9" fontFamily="'Share Tech Mono',monospace">{c.lbl}</text>;
+      })}
+      <line x1={cx} y1={cy} x2={ax} y2={ay} stroke="var(--amb)" strokeWidth="2" strokeLinecap="square"/>
+      <circle cx={ax} cy={ay} r="3.5" fill="var(--amb)" style={{filter:'drop-shadow(0 0 4px var(--amb))'}}/>
+      <circle cx={cx} cy={cy} r="3" fill="var(--g)" style={{filter:'drop-shadow(0 0 4px var(--g))'}}/>
+    </svg>
+  );
+}
+
+// ─── RELATIVE INTEL ──────────────────────────────────────────────────────────
+
+function RelativeIntel({ location, sectorElev, valenciaTemp }) {
+  const sectorTemp = location._temp !== undefined ? location._temp : null;
+  const distKm     = haversine(location.lat, location.lon, SANTO_DOMINGO.lat, SANTO_DOMINGO.lon);
+  const elevDelta  = sectorElev !== null ? Math.round(sectorElev - LIMA_ELEV_M) : null;
+  const elevDir    = elevDelta !== null ? (elevDelta>=0?'ABOVE':'BELOW') : null;
+  const tempDelta  = (sectorTemp!==null&&valenciaTemp!==null) ? Math.round(sectorTemp-valenciaTemp) : null;
+  const tempDir    = tempDelta!==null ? (tempDelta>=0?'WARMER':'COLDER') : null;
+
+  return (
+    <div className="intel-panel">
+      <div className="intel-hdr">[ RELATIVE INTEL ]</div>
+      <div className="intel-row">
+        <span className="intel-key">DIST TO SANTO DOMINGO</span>
+        <span className="intel-val">{distKm.toLocaleString()} KM</span>
+      </div>
+      <div className="intel-row">
+        <span className="intel-key">VS LIMA BASELINE (1550M)</span>
+        {elevDelta!==null
+          ? <span className={`intel-val ${elevDir==='ABOVE'?'above':'below'}`}>{Math.abs(elevDelta).toLocaleString()}M {elevDir}</span>
+          : <span className="intel-val pending">ACQUIRING<span className="blink">_</span></span>}
+      </div>
+      <div className="intel-row">
+        <span className="intel-key">VS VALENCIA TEMP</span>
+        {tempDelta!==null
+          ? <span className={`intel-val ${tempDir==='WARMER'?'warm':'cold'}`}>{Math.abs(tempDelta)}°C {tempDir}</span>
+          : <span className="intel-val pending">ACQUIRING<span className="blink">_</span></span>}
+      </div>
+    </div>
+  );
+}
+
+// ─── WEATHER PANEL ───────────────────────────────────────────────────────────
+
+function WeatherPanel({ weather, location, sectorElev, valenciaTemp, isExpanded, onExpand }) {
+  const wxHdr = (sub) => (
+    <div className="panel-hdr">
+      <span>◈ CONDITIONS · OPEN-METEO</span>
+      <span style={{fontSize:'9px'}}>{sub||location.id}</span>
+      <button className="panel-expand-btn" onClick={onExpand} title={isExpanded?'Restore':'Expand'}>{isExpanded?'⊠':'↗'}</button>
+    </div>
+  );
+  if (!weather) return (
+    <div className={`panel${isExpanded?' panel-fullscreen':''}`} style={isExpanded?{}:{flex:1}}>
+      {wxHdr(location.id)}
+      <div className="panel-body">
+        <div style={{color:'var(--g3)',fontSize:'11px',letterSpacing:'2px',marginBottom:'10px'}}>ACQUIRING DATA<span className="blink">_</span></div>
+        <RelativeIntel location={location} sectorElev={sectorElev} valenciaTemp={valenciaTemp}/>
+      </div>
+    </div>
+  );
+  if (weather.error) return (
+    <div className={`panel${isExpanded?' panel-fullscreen':''}`} style={isExpanded?{}:{flex:1}}>
+      {wxHdr()}
+      <div className="panel-body">
+        <div style={{color:'var(--red)',fontSize:'11px',letterSpacing:'2px',marginBottom:'10px'}}>SIGNAL LOST</div>
+        <RelativeIntel location={location} sectorElev={sectorElev} valenciaTemp={valenciaTemp}/>
+      </div>
+    </div>
+  );
+
+  const c=weather.current, d=weather.daily;
+  const tempC  = Math.round(c.temperature_2m);
+  const feelsC = Math.round(c.apparent_temperature);
+  const wxCode = c.weather_code!=null?c.weather_code:(c.weathercode!=null?c.weathercode:0);
+  const {sym,lbl} = wmo(wxCode);
+  const windSpd = Math.round(c.wind_speed_10m!=null?c.wind_speed_10m:(c.windspeed_10m||0));
+  const windDeg = Math.round(c.wind_direction_10m!=null?c.wind_direction_10m:(c.winddirection_10m||0));
+  const humidity = Math.round(c.relative_humidity_2m!=null?c.relative_humidity_2m:(c.relativehumidity_2m||0));
+  const fcCodes = d.weather_code||d.weathercode||[];
+  // Attach current temp so RelativeIntel can use it
+  const locationWithTemp = {...location, _temp: tempC };
+
+  return (
+    <div className={`panel${isExpanded?' panel-fullscreen':''}`} style={isExpanded?{}:{flex:1,overflowY:'auto'}}>
+      {wxHdr(location.id)}
+      <div className="panel-body">
+        <div style={{display:'flex',alignItems:'flex-end',gap:'8px',marginBottom:'2px'}}>
+          <div className="wx-temp">{tempC}°</div>
+          <div><div style={{fontSize:'22px',lineHeight:1}}>{sym}</div><div style={{fontSize:'9px',color:'var(--g3)'}}>C</div></div>
+        </div>
+        <div className="wx-feels">FEELS LIKE {feelsC}°C</div>
+        <div className="wx-cond">{lbl}</div>
+
+        <div className="wx-stats">
+          <div className="wx-stat"><span>WIND</span><span>{windSpd}km/h</span></div>
+          <div className="wx-stat"><span>DIR</span><span>{bearing(windDeg)}</span></div>
+          <div className="wx-stat"><span>HUMID</span><span>{humidity}%</span></div>
+          <div className="wx-stat"><span>CODE</span><span>WMO-{wxCode}</span></div>
+        </div>
+
+        <div style={{fontSize:'10px',color:'var(--g3)',letterSpacing:'2px',marginBottom:'3px'}}>4-DAY FORECAST</div>
+        <div className="forecast-grid">
+          {(d.time||[]).slice(0,4).map((t,i) => (
+            <div key={i} className="fc-day">
+              <div className="fc-day-name">{dayName(t)}</div>
+              <div className="fc-sym">{wmo(fcCodes[i]).sym}</div>
+              <div className="fc-hi">{Math.round(d.temperature_2m_max[i])}°</div>
+              <div className="fc-lo">{Math.round(d.temperature_2m_min[i])}°</div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{fontSize:'10px',color:'var(--g3)',letterSpacing:'2px',marginBottom:'3px'}}>WIND VECTOR</div>
+        <div className="compass-row">
+          <WindCompass speed={windSpd} dir={windDeg}/>
+          <div style={{fontSize:'10px',lineHeight:'1.8'}}>
+            <div><span style={{color:'var(--g3)'}}>HEADING </span><span style={{color:'var(--amb)'}}>{windDeg}°</span></div>
+            <div><span style={{color:'var(--g3)'}}>BEARING </span><span>{bearing(windDeg)}</span></div>
+            <div><span style={{color:'var(--g3)'}}>SPEED   </span><span>{windSpd} km/h</span></div>
+            <div><span style={{color:'var(--g3)'}}>BFT     </span><span>{beaufort(windSpd)}</span></div>
+          </div>
+        </div>
+
+        <div style={{fontSize:'10px',color:'var(--g3)',letterSpacing:'2px',marginBottom:'3px'}}>SOLAR CYCLE · TODAY</div>
+        <div className="sun-row">
+          <div className="sun-item"><span className="sun-label">▲ SUNRISE</span><span className="sun-time">{fmtSun((d.sunrise||[])[0])}</span></div>
+          <div className="sun-item"><span className="sun-label">▼ SUNSET</span><span className="sun-time">{fmtSun((d.sunset||[])[0])}</span></div>
+          <div className="sun-item"><span className="sun-label">▲ RISE+1</span><span className="sun-time">{fmtSun((d.sunrise||[])[1])}</span></div>
+          <div className="sun-item"><span className="sun-label">▼ SET+1</span><span className="sun-time">{fmtSun((d.sunset||[])[1])}</span></div>
+        </div>
+
+        <RelativeIntel location={locationWithTemp} sectorElev={sectorElev} valenciaTemp={valenciaTemp}/>
+      </div>
+    </div>
+  );
+}
+
+// ─── WINDY MAP ───────────────────────────────────────────────────────────────
+
+function WindyMap({ location, isExpanded, onExpand }) {
+  const src = useMemo(() => {
+    const { lat, lon } = location;
+    return `https://embed.windy.com/embed.html?lat=${lat}&lon=${lon}&zoom=5&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1`;
+  }, [location.lat, location.lon]);
+
+  return (
+    <div className={`panel windy-frame${isExpanded?' panel-fullscreen':''}`} style={isExpanded?{}:{flex:'1 1 55%'}}>
+      <div className="panel-hdr">
+        <span>◈ TACTICAL MAP · WINDY.COM</span>
+        <span style={{fontSize:'9px'}}>ECMWF · SURFACE WIND</span>
+        <button className="panel-expand-btn" onClick={onExpand} title={isExpanded?'Restore':'Expand'}>{isExpanded?'⊠':'↗'}</button>
+      </div>
+      <div className="windy-iframe-wrap">
+        <iframe src={src} title="Windy Map" allowFullScreen/>
+        <div className="map-overlay-corner tl">{location.id} // {location.name}</div>
+        <div className="map-overlay-corner br">{Math.abs(location.lat).toFixed(2)}{location.lat>=0?'N':'S'} {Math.abs(location.lon).toFixed(2)}{location.lon>=0?'E':'W'}</div>
+      </div>
+    </div>
+  );
+}
+
+// ─── RADAR MAP ───────────────────────────────────────────────────────────────
+
+function RadarMap({ location, isExpanded, onExpand }) {
+  const containerRef = useRef(null);
+  const mapRef = useRef(null);
+  const layerRef = useRef(null);
+  const markerRef = useRef(null);
+  const [frames, setFrames] = useState([]);
+  const [idx, setIdx] = useState(0);
+  const [animating, setAnimating] = useState(true);
+  const [mapReady, setMapReady] = useState(false);
+
+  useEffect(() => {
+    fetch('https://api.rainviewer.com/public/weather-maps.json')
+      .then(r=>r.json())
+      .then(data => {
+        const f=[...(data.radar.past||[]),...(data.radar.nowcast||[])];
+        setFrames(f); setIdx(f.length>1?f.length-1:0);
+      }).catch(e=>console.warn('RainViewer:',e));
+  },[]);
+
+  useEffect(() => {
+    if (!containerRef.current||!window.L) return;
+    const L=window.L;
+    if (mapRef.current) { mapRef.current.remove(); mapRef.current=null; layerRef.current=null; markerRef.current=null; }
+    const map=L.map(containerRef.current,{center:[location.lat,location.lon],zoom:4,zoomControl:true,attributionControl:false});
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:10,subdomains:'abcd'}).addTo(map);
+    const marker=L.marker([location.lat,location.lon],{icon:L.divIcon({html:'<div style="color:#ffb000;font-size:18px;text-shadow:0 0 8px #ffb000">✛</div>',iconSize:[20,20],iconAnchor:[10,10],className:''})}).addTo(map);
+    mapRef.current=map; markerRef.current=marker; setMapReady(true);
+    return () => { map.remove(); mapRef.current=null; layerRef.current=null; markerRef.current=null; setMapReady(false); };
+  },[]);
+
+  useEffect(() => {
+    if (mapRef.current) mapRef.current.setView([location.lat,location.lon],4);
+    if (markerRef.current) markerRef.current.setLatLng([location.lat,location.lon]);
+  },[location.lat,location.lon]);
+
+  useEffect(() => {
+    if (!mapRef.current||!window.L||frames.length===0) return;
+    const L=window.L;
+    if (layerRef.current) { mapRef.current.removeLayer(layerRef.current); layerRef.current=null; }
+    const frame=frames[idx];
+    if (frame) {
+      layerRef.current=L.tileLayer(`https://tilecache.rainviewer.com${frame.path}/256/{z}/{x}/{y}/4/1_1.png`,{opacity:.75,maxZoom:10,tileSize:256});
+      layerRef.current.addTo(mapRef.current);
+    }
+  },[frames,idx,mapReady]);
+
+  useEffect(() => {
+    if (!animating||frames.length<2) return;
+    const t=setInterval(()=>setIdx(i=>(i+1)%frames.length),600);
+    return ()=>clearInterval(t);
+  },[animating,frames.length]);
+
+  const ts = frames[idx] ? new Date(frames[idx].time*1000).toUTCString().replace(/.*,\s/,'').replace(' GMT','Z') : '--';
+
+  return (
+    <div className={`panel radar-frame${isExpanded?' panel-fullscreen':''}`} style={isExpanded?{}:{flex:'1 1 40%'}}>
+      <div className="panel-hdr">
+        <span>◈ RADAR · RAINVIEWER</span>
+        <span style={{fontSize:'9px'}}>{frames.length>0?`FRM ${idx+1}/${frames.length}`:'LOADING'}</span>
+        <button className="panel-expand-btn" onClick={onExpand} title={isExpanded?'Restore':'Expand'}>{isExpanded?'⊠':'↗'}</button>
+      </div>
+      <div ref={containerRef} className="radar-map-div" style={{flex:1,minHeight:0}}/>
+      <div className="radar-controls">
+        <button className={`btn-sm${animating?' active':''}`} onClick={()=>setAnimating(a=>!a)}>{animating?'⏸ PAUSE':'▶ PLAY'}</button>
+        <button className="btn-sm" onClick={()=>setIdx(i=>Math.max(0,i-1))}>◀</button>
+        <button className="btn-sm" onClick={()=>setIdx(i=>Math.min(frames.length-1,i+1))}>▶</button>
+        <span style={{color:'var(--g3)',marginLeft:'auto',fontSize:'9px'}}>{ts}</span>
+      </div>
+    </div>
+  );
+}
+
+// ─── LIVE CAM SLOT ───────────────────────────────────────────────────────────
+// Renders based on cam source type. No YT API — simple iframes/img tags only.
+// SIGNAL LOST only fires for MJPEG streams (img.onerror is reliable cross-origin).
+// For YouTube/iframe sources, browser shows the embed's own error UI if it fails.
+
+function LiveCamSlot({ cam, slotLabel, location }) {
+  const [streamError, setStreamError] = useState(false);
+
+  // Reset error state when cam changes
+  useEffect(() => { setStreamError(false); }, [cam]);
+
+  if (!cam || cam.type === 'none') {
+    return (
+      <div className="signal-lost-overlay">
+        <div className="sl-title" style={{fontSize:'13px',color:'var(--g3)',animation:'none',letterSpacing:'2px'}}>NO FEED</div>
+        <div className="sl-sub" style={{color:'#1a3a1a',marginBottom:'6px'}}>SELECT SLOT · PASTE SOURCE BELOW</div>
+        {location && (
+          <a
+            href={`https://www.windy.com/webcams?lat=${location.lat.toFixed(2)}&lon=${location.lon.toFixed(2)}`}
+            target="_blank" rel="noreferrer"
+            style={{fontSize:'9px',color:'#004488',letterSpacing:'1px',textDecoration:'none',border:'1px solid #003366',padding:'2px 8px'}}
+          >
+            ↗ FIND CAMS NEAR {location.name}
+          </a>
+        )}
+      </div>
+    );
+  }
+
+  // ── Windy webcam embed (recommended — works from file:// and most browsers)
+  if (cam.type === 'windy') {
+    return (
+      <iframe
+        src={`https://webcams.windy.com/webcams/public/embed/player/${cam.id}`}
+        style={{width:'100%',height:'100%',border:'none'}}
+        allowFullScreen
+        title={slotLabel}
+      />
+    );
+  }
+
+  // ── YouTube simple iframe (no API — works when video allows embedding & when hosted)
+  if (cam.type === 'youtube') {
+    return (
+      <iframe
+        src={`https://www.youtube.com/embed/${cam.id}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&playsinline=1`}
+        style={{width:'100%',height:'100%',border:'none'}}
+        allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+        allowFullScreen
+        referrerPolicy="no-referrer-when-downgrade"
+        title={slotLabel}
+      />
+    );
+  }
+
+  // ── MJPEG / direct image stream — reliable onerror detection
+  if (cam.type === 'stream') {
+    if (streamError) {
+      return (
+        <div className="signal-lost-overlay">
+          <div className="sl-title">⚡ SIGNAL LOST</div>
+          <div className="sl-sub">STREAM UNAVAILABLE · {slotLabel}</div>
+          <div className="sl-bars">
+            {Array.from({length:8},(_,i)=>(
+              <div key={i} className="sl-bar" style={{animationDuration:`${0.6+i*0.1}s`,animationDelay:`${i*0.08}s`}}/>
+            ))}
+          </div>
+          <button
+            onClick={() => setStreamError(false)}
+            style={{marginTop:'8px',background:'none',border:'1px solid #3a0000',color:'#6a0000',fontFamily:'var(--font)',fontSize:'9px',padding:'2px 8px',cursor:'pointer',letterSpacing:'1px'}}
+            onMouseEnter={e=>e.target.style.color='var(--red)'}
+            onMouseLeave={e=>e.target.style.color='#6a0000'}
+          >RETRY</button>
+        </div>
+      );
+    }
+    return (
+      <img
+        src={cam.url}
+        style={{width:'100%',height:'100%',objectFit:'cover',display:'block'}}
+        onError={() => setStreamError(true)}
+        alt={slotLabel}
+      />
+    );
+  }
+
+  // ── Generic iframe (EarthCam, SkylineWebcams, custom embed, etc.)
+  if (cam.type === 'iframe') {
+    return (
+      <iframe
+        src={cam.url}
+        style={{width:'100%',height:'100%',border:'none'}}
+        allowFullScreen
+        title={slotLabel}
+      />
+    );
+  }
+
+  return null;
+}
+
+// ─── LIVE CAM PANEL ──────────────────────────────────────────────────────────
+
+const CAM_TYPES = [
+  { id:'none',    label:'EMPTY',   placeholder:'' },
+  { id:'windy',   label:'WINDY',   placeholder:'Windy cam ID or full URL' },
+  { id:'youtube', label:'YOUTUBE', placeholder:'YouTube URL or 11-char video ID' },
+  { id:'stream',  label:'MJPEG',   placeholder:'http://…/cam.mjpeg' },
+  { id:'iframe',  label:'IFRAME',  placeholder:'https://embed-url…' },
+];
+
+function LiveCamPanel({ camConfig, setCamConfig, location, onAutoDiscover, windyKey, isExpanded, onExpand }) {
+  const [selectedSlot, setSelectedSlot] = useState(0);
+  const [urlInput, setUrlInput]         = useState('');
+  const [activeType, setActiveType]     = useState('none');
+  const [autoStatus, setAutoStatus]     = useState('idle');
+
+  const { count, layoutId, slots } = camConfig;
+  const layouts = CAM_LAYOUTS[count];
+  const layout  = layouts.find(l => l.id === layoutId) || layouts[0];
+
+  // Sync editor from selected slot whenever slot or config changes
+  const { useEffect: ue } = React;
+  ue(() => {
+    const cam = slots[selectedSlot];
+    if (cam && cam.type !== 'none') {
+      setActiveType(cam.type);
+      setUrlInput(cam.id || cam.url || '');
+    } else {
+      setActiveType('none');
+      setUrlInput('');
+    }
+  }, [selectedSlot, camConfig]);
+
+  const updateSlot = (idx, cam) =>
+    setCamConfig(prev => {
+      const next = [...prev.slots]; next[idx] = cam;
+      return { ...prev, slots: next };
+    });
+
+  const handleCountChange = (n) => {
+    const first = CAM_LAYOUTS[n][0];
+    setCamConfig(prev => ({ ...prev, count: n, layoutId: first.id }));
+    setSelectedSlot(0);
+  };
+
+  const handleLayoutChange = (lId) => {
+    setCamConfig(prev => ({ ...prev, layoutId: lId }));
+    setSelectedSlot(0);
+  };
+
+  const handleApply = () => {
+    const s = urlInput.trim();
+    if (activeType === 'none') { updateSlot(selectedSlot, { type:'none' }); return; }
+    if (!s) return;
+    let cam;
+    if (activeType === 'windy') {
+      const m = s.match(/(\d{7,13})/);
+      cam = { type:'windy', id: m ? m[1] : s };
+    } else if (activeType === 'youtube') {
+      const ytId = s.match(/(?:youtu\.be\/|[?&]v=|\/embed\/)([A-Za-z0-9_-]{11})/)?.[1]
+                || (s.length === 11 && /[A-Za-z]/.test(s) ? s : null);
+      cam = { type:'youtube', id: ytId || s };
+    } else if (activeType === 'stream') {
+      cam = { type:'stream', url: s };
+    } else if (activeType === 'iframe') {
+      cam = { type:'iframe', url: s };
+    }
+    if (cam) updateSlot(selectedSlot, cam);
+  };
+
+  const handleClear = () => updateSlot(selectedSlot, { type:'none' });
+
+  const handleAutoDiscover = async () => {
+    if (!windyKey) { setAutoStatus('no-key'); return; }
+    setAutoStatus('loading');
+    const result = await onAutoDiscover();
+    setAutoStatus(result.status);
+    if (result.status === 'found') setTimeout(() => setAutoStatus('idle'), 3000);
+  };
+
+  const slotIcon = (cam) => {
+    if (!cam || cam.type === 'none') return '○';
+    return { windy:'🌬', youtube:'▶', stream:'📷', iframe:'🔗' }[cam.type] || '●';
+  };
+
+  const autoLabel = { idle:'⊕ AUTO', loading:'…', found:'FOUND ✓', 'no-key':'NO KEY', error:'ERROR', empty:'NONE NEAR' }[autoStatus] || '⊕ AUTO';
+  const autoColor = { found:'var(--g)', 'no-key':'var(--red)', error:'var(--red)' }[autoStatus];
+  const activeCam = slots[selectedSlot];
+  const typeInfo  = CAM_TYPES.find(t => t.id === activeType) || CAM_TYPES[0];
+
+  return (
+    <div className={`panel livecam-panel${isExpanded?' panel-fullscreen':''}`}>
+
+      {/* Header */}
+      <div className="panel-hdr">
+        <span>◈ LIVECAM</span>
+        <span style={{color:'var(--red)',fontSize:'9px',animation:'blink 1.5s step-end infinite',marginLeft:'auto'}}>● REC</span>
+        <button className="panel-expand-btn" onClick={onExpand} title={isExpanded?'Restore':'Expand'}>{isExpanded?'⊠':'↗'}</button>
+      </div>
+
+      {/* Pane count + layout selector */}
+      <div className="cam-controls-row">
+        <div style={{display:'flex',gap:'2px',alignItems:'center'}}>
+          <span style={{fontSize:'9px',color:'#004400',marginRight:'2px',letterSpacing:'1px'}}>PANES</span>
+          {[1,2,3,4].map(n => (
+            <button key={n} className={`cam-grid-btn${count===n?' active':''}`}
+              onClick={() => handleCountChange(n)}>{n}</button>
+          ))}
+        </div>
+        <div style={{display:'flex',gap:'2px',alignItems:'center'}}>
+          <span style={{fontSize:'9px',color:'#004400',marginRight:'2px',letterSpacing:'1px'}}>LAYOUT</span>
+          {CAM_LAYOUTS[count].map(l => (
+            <button key={l.id} className={`cam-grid-btn${layoutId===l.id?' active':''}`}
+              onClick={() => handleLayoutChange(l.id)} title={l.id}>{l.label}</button>
+          ))}
+        </div>
+      </div>
+
+      {/* Cam grid — aspect-ratio container fills to 16:9 */}
+      <div style={{
+        display:'grid',
+        gridTemplateColumns: layout.cols,
+        gridTemplateRows:    layout.rows,
+        width:'100%', aspectRatio:'16/9',
+        flexShrink:0,
+      }}>
+        {layout.slots.map((slotDef, i) => (
+          <div key={i} className="cam-cell"
+            style={{
+              ...(slotDef.style || {}),
+              outline: selectedSlot===i ? '2px solid var(--amb)' : '1px solid var(--g3)',
+              outlineOffset:'-1px',
+            }}
+            onClick={() => setSelectedSlot(i)}
+          >
+            <LiveCamSlot cam={slots[i]} slotLabel={`CAM-0${i+1}`} location={location}/>
+            {slots[i]?.type && slots[i].type !== 'none' && (
+              <div className="cam-overlay"><div className="cam-badge">LIVE</div></div>
+            )}
+            {count > 1 && (
+              <div className="cam-slot-num">{slotIcon(slots[i])}{i+1}</div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Slot editor footer */}
+      <div style={{padding:'4px 6px',background:'#030804',borderTop:'1px solid var(--g3)',flexShrink:0}}>
+
+        {/* Slot info + auto-discover + browse */}
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'3px'}}>
+          <span style={{fontSize:'9px',color:'var(--g3)',letterSpacing:'1px'}}>
+            SLOT {selectedSlot+1} · {(activeCam?.type||'NONE').toUpperCase()}
+          </span>
+          <div style={{display:'flex',gap:'4px',alignItems:'center'}}>
+            <button onClick={handleAutoDiscover}
+              style={{background:'none',border:'1px solid #002266',color:autoColor||'#004488',
+                fontFamily:'var(--font)',fontSize:'9px',padding:'1px 4px',cursor:'pointer',letterSpacing:'1px',
+                opacity:autoStatus==='loading'?0.5:1}}
+              disabled={autoStatus==='loading'}
+              title={windyKey?'Find nearby Windy webcams':'Add Windy key in SysConfig'}>
+              {autoLabel}
+            </button>
+            <a href={`https://www.windy.com/webcams?lat=${location.lat.toFixed(2)}&lon=${location.lon.toFixed(2)}`}
+              target="_blank" rel="noreferrer"
+              style={{color:'#004488',textDecoration:'none',fontSize:'9px',letterSpacing:'1px'}}>↗ BROWSE</a>
+          </div>
+        </div>
+
+        {/* Source type selector */}
+        <div className="cam-type-strip">
+          {CAM_TYPES.map(t => (
+            <button key={t.id}
+              className={`btn-cam${activeType===t.id?' active':''}`}
+              onClick={() => setActiveType(t.id)}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {/* URL / ID input */}
+        {activeType !== 'none' && (
+          <div className="cam-edit-row">
+            <input className="cam-edit-input"
+              placeholder={typeInfo.placeholder}
+              value={urlInput}
+              onChange={e => setUrlInput(e.target.value)}
+              onKeyDown={e => { if(e.key==='Enter') handleApply(); }}
+            />
+            <button className="btn-cam" onClick={handleApply}>APPLY</button>
+            <button className="btn-cam danger" onClick={handleClear}>CLR</button>
+          </div>
+        )}
+        {activeType === 'none' && (
+          <button className="btn-cam danger" style={{width:'100%'}} onClick={handleClear}>CLEAR THIS SLOT</button>
+        )}
+
+        {/* Contextual hints */}
+        <div style={{fontSize:'9px',marginTop:'2px',letterSpacing:'1px',minHeight:'12px'}}>
+          {autoStatus === 'no-key' && <span style={{color:'var(--red)'}}>ADD WINDY API KEY IN SYSCONFIG TO USE AUTO-DISCOVER</span>}
+          {autoStatus !== 'no-key' && activeType === 'youtube' && <span style={{color:'#7a4400'}}>⚠ YOUTUBE ACTIVE ONLY ON HTTPS — OFFLINE FROM file://</span>}
+          {autoStatus !== 'no-key' && activeType === 'windy'   && !windyKey && <span style={{color:'#1a3a1a'}}>ADD WINDY KEY IN SYSCONFIG FOR AUTO-DISCOVER</span>}
+          {autoStatus !== 'no-key' && activeType === 'none' && (!activeCam || activeCam.type==='none') && <span style={{color:'#1a3a1a'}}>SELECT A SOURCE TYPE ABOVE TO CONFIGURE THIS SLOT</span>}
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+// ─── DASHBOARD BAR ───────────────────────────────────────────────────────────
+
+function DashboardBar({ dashLayout, onLayout, expandedPanel }) {
+  return (
+    <div className="dash-bar">
+      <span className="dash-bar-label">LAYOUT</span>
+      {DASH_LAYOUTS.map(l => (
+        <button key={l.id}
+          className={`dash-layout-btn${dashLayout===l.id?' active':''}`}
+          onClick={() => onLayout(l.id)}
+          title={l.cols}
+        >{l.label}</button>
+      ))}
+      {expandedPanel && (
+        <span style={{marginLeft:'auto',fontSize:'9px',color:'var(--amb)',letterSpacing:'1px',animation:'blink 1.5s step-end infinite'}}>
+          ↗ {expandedPanel.toUpperCase()} · ESC TO RESTORE
+        </span>
+      )}
+    </div>
+  );
+}
+
+// ─── ROOT COMPONENT ──────────────────────────────────────────────────────────
+
+function GitmoRadio() {
+  // ── Guide panel
+  const [showGuide, setShowGuide] = useState(false);
+  useEffect(() => {
+    const onKey = e => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.key === '?') setShowGuide(v => !v);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  // ── Location (sector preset or custom)
+  const [location, setLocation] = useState(SECTORS[0]);
+
+  // ── Weather
+  const [weather, setWeather] = useState(null);
+  const [sectorElev, setSectorElev] = useState(null);
+  const [valenciaTemp, setValenciaTemp] = useState(null);
+
+  // ── Clock
+  const [clock, setClock] = useState('');
+
+  // ── Genre (independent of location)
+  const [genre, setGenre] = useState(GENRES.find(g => g.tag === SECTORS[0].radioTag) || GENRES[0]);
+
+  // ── Radio Browser
+  const [stations, setStations] = useState([]);
+  const [curStation, setCurStation] = useState(null);
+
+  // ── Audio engine
+  const [audioMode, setAudioMode] = useState('stream');
+  const [customAudio, setCustomAudio] = useState(null);
+  const [streamUrlInput, setStreamUrlInput] = useState('');
+  const [scUrl, setScUrl] = useState('');
+  const [scActive, setScActive] = useState('');
+  const [playing, setPlaying] = useState(false);
+  const [volume, setVolume] = useState(0.7);
+  const [vuBars, setVuBars] = useState(new Array(20).fill(3));
+  const audioRef = useRef(null);
+
+  // ── Cam config (persisted in localStorage)
+  const DEFAULT_CAM_CONFIG = { count:1, layoutId:'solo', slots:[{type:'none'},{type:'none'},{type:'none'},{type:'none'}] };
+  const [camConfig, setCamConfig] = useState(() => {
+    try { const s = localStorage.getItem('gitmo_cam_config'); if(s) return JSON.parse(s); } catch {}
+    return DEFAULT_CAM_CONFIG;
+  });
+  useEffect(() => { try { localStorage.setItem('gitmo_cam_config', JSON.stringify(camConfig)); } catch {} }, [camConfig]);
+
+  // ── Windy API key (persisted in localStorage)
+  const [windyKey, setWindyKey] = useState(() => { try { return localStorage.getItem('gitmo_windy_key')||''; } catch { return ''; } });
+  useEffect(() => { try { localStorage.setItem('gitmo_windy_key', windyKey); } catch {} }, [windyKey]);
+
+  // ── Incident counter
+  const [incidentTs, setIncidentTs] = useState(() => {
+    try { const s=localStorage.getItem('gitmo_incident'); return s?parseInt(s,10):Date.now(); } catch { return Date.now(); }
+  });
+  const [incidentFlash, setIncidentFlash] = useState(false);
+  const incidentDays = Math.floor((Date.now()-incidentTs)/86400000);
+
+  const resetIncident = () => {
+    const now=Date.now();
+    try { localStorage.setItem('gitmo_incident',String(now)); } catch {}
+    setIncidentTs(now); setIncidentFlash(true); setTimeout(()=>setIncidentFlash(false),900);
+  };
+
+  // ── Dashboard layout + panel expand
+  const [dashLayout, setDashLayout] = useState(() => { try { return localStorage.getItem('gitmo_dash_layout')||'balanced'; } catch { return 'balanced'; } });
+  useEffect(() => { try { localStorage.setItem('gitmo_dash_layout', dashLayout); } catch {} }, [dashLayout]);
+  const dashCols = DASH_LAYOUTS.find(l=>l.id===dashLayout)?.cols || '240px 1fr 300px';
+
+  const [expandedPanel, setExpandedPanel] = useState(null); // null | 'radio'|'map'|'radar'|'weather'|'cam'
+  const toggleExpand = (id) => setExpandedPanel(p => p===id ? null : id);
+  useEffect(() => {
+    const h = e => { if(e.key==='Escape') setExpandedPanel(null); };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  }, []);
+
+  // ── UTC clock
+  useEffect(() => {
+    const tick=()=>{ const n=new Date(); setClock(n.toUTCString().replace(/^.*?,\s/,'').replace(' GMT',' UTC')); };
+    tick(); const t=setInterval(tick,1000); return ()=>clearInterval(t);
+  },[]);
+
+  // ── Weather on location change
+  useEffect(() => {
+    setWeather(null); setSectorElev(null);
+    const { lat, lon } = location;
+
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,relative_humidity_2m&daily=sunrise,sunset,weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=4`)
+      .then(r=>r.json()).then(setWeather).catch(()=>setWeather({error:true}));
+
+    fetch(`https://api.open-meteo.com/v1/elevation?latitude=${lat}&longitude=${lon}`)
+      .then(r=>r.json())
+      .then(d=>{ if(d.elevation?.length>0) setSectorElev(d.elevation[0]); })
+      .catch(()=>{});
+  }, [location.lat, location.lon]);
+
+  // ── Valencia temp (once on mount)
+  useEffect(() => {
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${VALENCIA.lat}&longitude=${VALENCIA.lon}&current=temperature_2m&timezone=auto`)
+      .then(r=>r.json())
+      .then(d=>{ if(d.current?.temperature_2m!=null) setValenciaTemp(d.current.temperature_2m); })
+      .catch(()=>{});
+  },[]);
+
+  // ── Radio Browser on genre change (curated genres skip the API entirely)
+  useEffect(() => {
+    setStations([]); setCurStation(null);
+    if (audioMode==='stream' && audioRef.current) { audioRef.current.pause(); audioRef.current.src=''; setPlaying(false); }
+
+    // Genres with a hardcoded `stations` array bypass Radio Browser
+    if (genre.stations) {
+      setStations(genre.stations);
+      if (genre.stations.length > 0) setCurStation(genre.stations[0]);
+      return;
+    }
+
+    const mirrors=['de1','nl1','at1'];
+    const tryFetch=(attempts)=>{
+      if (!attempts.length) return;
+      const host=attempts[0];
+      fetch(`https://${host}.api.radio-browser.info/json/stations/search?tag=${encodeURIComponent(genre.tag)}&limit=20&hidebroken=true&order=clickcount&reverse=true`)
+        .then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
+        .then(data=>{
+          const valid=data.filter(s=>s.url_resolved&&s.url_resolved.startsWith('http'));
+          setStations(valid); if(valid.length>0) setCurStation(valid[0]);
+        })
+        .catch(()=>tryFetch(attempts.slice(1)));
+    };
+    tryFetch([...mirrors].sort(()=>Math.random()-.5));
+  }, [genre]);
+
+  // ── Handle sector selection (cam slots are NOT reset — user manages them)
+  const handleSectorSelect = (s) => {
+    setLocation(s);
+    const defaultGenre = GENRES.find(g => g.tag === s.radioTag);
+    if (defaultGenre) setGenre(defaultGenre);
+  };
+
+  // ── Handle custom location (geocoded city or GPS)
+  const handleLocationChange = (loc) => {
+    setLocation(loc);
+  };
+
+  // ── Windy auto-discover: fetch nearby webcams and fill slots
+  const autoDiscoverCams = React.useCallback(async () => {
+    if (!windyKey) return { status: 'no-key' };
+    const { lat, lon } = location;
+    try {
+      const res = await fetch(
+        `https://api.windy.com/api/webcams/v2/list/nearby/${lat},${lon}/50?key=${windyKey}&show=webcams:location,player&limit=4`
+      );
+      if (res.status === 401 || res.status === 403) return { status: 'no-key' };
+      if (!res.ok) return { status: 'error' };
+      const data = await res.json();
+      const webcams = data.result?.webcams || [];
+      if (!webcams.length) return { status: 'empty' };
+      setCamConfig(prev => ({
+        ...prev,
+        slots: [0,1,2,3].map(i => webcams[i] ? { type:'windy', id: String(webcams[i].id) } : { type:'none' })
+      }));
+      return { status: 'found', count: webcams.length };
+    } catch(e) {
+      console.warn('Windy cam API error:', e);
+      return { status: 'error' };
+    }
+  }, [location.lat, location.lon, windyKey]);
+
+  // ── Audio mode change
+  useEffect(() => {
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current.src=''; }
+    setPlaying(false);
+  }, [audioMode]);
+
+  // ── Load stream station
+  useEffect(() => {
+    if (audioMode!=='stream'||!audioRef.current||!curStation) return;
+    audioRef.current.src=curStation.url_resolved;
+    if (playing) audioRef.current.play().catch(()=>setPlaying(false));
+  }, [curStation]);
+
+  // ── Load custom audio
+  useEffect(() => {
+    if (audioMode==='stream'||audioMode==='sc'||!customAudio||!audioRef.current) return;
+    audioRef.current.src=customAudio.src;
+    audioRef.current.load();
+    audioRef.current.play().then(()=>setPlaying(true)).catch(e=>{console.warn(e);setPlaying(false);});
+  }, [customAudio]);
+
+  // ── Volume
+  useEffect(() => { if (audioRef.current) audioRef.current.volume=volume; }, [volume]);
+
+  // ── VU meter
+  useEffect(() => {
+    if (!playing && !(audioMode==='sc'&&scActive)) { setVuBars(new Array(20).fill(3)); return; }
+    const t=setInterval(()=>setVuBars(prev=>prev.map((_,i)=>Math.max(3,Math.min(99,20+Math.sin(Date.now()/300+i*.4)*15+Math.random()*60)))),80);
+    return ()=>clearInterval(t);
+  },[playing,audioMode,scActive]);
+
+  // ── Auto-advance station on error
+  useEffect(() => {
+    const el=audioRef.current; if(!el) return;
+    const onError=()=>{
+      if (audioMode!=='stream'||!playing) return;
+      const idx=stations.findIndex(s=>s.stationuuid===curStation?.stationuuid);
+      const next=stations[idx+1];
+      if (next) setCurStation(next); else setPlaying(false);
+    };
+    el.addEventListener('error',onError);
+    return ()=>el.removeEventListener('error',onError);
+  }, [audioMode,playing,stations,curStation]);
+
+  // ── Toggle play
+  const togglePlay=()=>{
+    if (!audioRef.current) return;
+    const src=audioMode==='stream'?curStation?.url_resolved:customAudio?.src;
+    if (!src) return;
+    if (playing) {
+      audioRef.current.pause(); setPlaying(false);
+    } else {
+      if (audioRef.current.src!==src) audioRef.current.src=src;
+      audioRef.current.play().then(()=>setPlaying(true)).catch(e=>{console.warn(e);setPlaying(false);});
+    }
+  };
+
+  const handleFileLoad=(e)=>{
+    const file=e.target.files[0]; if(!file) return;
+    if (customAudio?.src?.startsWith('blob:')) URL.revokeObjectURL(customAudio.src);
+    setCustomAudio({name:file.name,src:URL.createObjectURL(file)});
+  };
+
+  const handleUrlTune=()=>{
+    const url=streamUrlInput.trim(); if(!url) return;
+    setCustomAudio({name:url,src:url});
+  };
+
+  const handleScTune=()=>{
+    const url=scUrl.trim(); if(!url) return;
+    setScActive(url);
+  };
+
+  const handleStationClick=(s)=>{
+    if (audioMode!=='stream') return;
+    setCurStation(s);
+    if (audioRef.current) {
+      audioRef.current.src=s.url_resolved;
+      audioRef.current.play().then(()=>setPlaying(true)).catch(()=>{});
+    }
+  };
+
+  const handleGenreChange=(g)=>{
+    setGenre(g);
+  };
+
+  const audioConfig = {
+    mode:audioMode, setMode:setAudioMode,
+    streamUrl:streamUrlInput, setStreamUrl:setStreamUrlInput,
+    customAudio, onFileLoad:handleFileLoad, onUrlTune:handleUrlTune,
+    scUrl, setScUrl, scActive, onScTune:handleScTune,
+    genreLabel: genre.label,
+  };
+
+  const windyConfig = { key: windyKey, setKey: setWindyKey };
+
+  return (
+    <div className="app">
+      <audio ref={audioRef} preload="none"/>
+      {showGuide && <GuidePanel onClose={() => setShowGuide(false)}/>}
+      <Header clock={clock} location={location} onGuide={() => setShowGuide(v => !v)}/>
+      <IncidentCounter days={incidentDays} onReset={resetIncident} flashing={incidentFlash}/>
+      <DashboardBar dashLayout={dashLayout} onLayout={setDashLayout} expandedPanel={expandedPanel}/>
+      <div className="main-grid" style={{'--dash-cols': dashCols}}>
+
+        {/* ── LEFT ── */}
+        <div className="left-col">
+          <SectorSelector
+            location={location}
+            onLocationChange={handleLocationChange}
+            onSectorSelect={handleSectorSelect}
+          />
+          <RadioPlayer
+            station={curStation} stations={stations}
+            playing={playing} volume={volume} vuBars={vuBars}
+            onToggle={togglePlay} onVolume={setVolume}
+            onStation={handleStationClick}
+            audioConfig={audioConfig}
+            genre={genre} onGenre={handleGenreChange}
+            location={location}
+            windyConfig={windyConfig}
+            isExpanded={expandedPanel==='radio'}
+            onExpand={() => toggleExpand('radio')}
+          />
+        </div>
+
+        {/* ── CENTER ── */}
+        <div className="center-col">
+          <WindyMap location={location}
+            isExpanded={expandedPanel==='map'} onExpand={() => toggleExpand('map')}/>
+          <RadarMap location={location}
+            isExpanded={expandedPanel==='radar'} onExpand={() => toggleExpand('radar')}/>
+        </div>
+
+        {/* ── RIGHT ── */}
+        <div className="right-col">
+          <WeatherPanel weather={weather} location={location} sectorElev={sectorElev} valenciaTemp={valenciaTemp}
+            isExpanded={expandedPanel==='weather'} onExpand={() => toggleExpand('weather')}/>
+          <LiveCamPanel
+            camConfig={camConfig}
+            setCamConfig={setCamConfig}
+            location={location}
+            onAutoDiscover={autoDiscoverCams}
+            windyKey={windyKey}
+            isExpanded={expandedPanel==='cam'}
+            onExpand={() => toggleExpand('cam')}
+          />
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<GitmoRadio/>);
+</script>
+</body>
+</html>
